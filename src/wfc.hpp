@@ -13,14 +13,14 @@ class Wfc {
 public :
     Wfc(int _tile_shapes, int _materials);
     std::vector<Tile> wfc(int _width, int _height, int _n);
-    void printTile(std::pair<int,int> temp[4]);
+    void printTile(std::vector<std::pair<int, int>> temp);
 private :
     int tile_shapes;
     int materials;
     int width;
     int height;
     int n;
-    void make_tile(std::pair<int,int> temp[4],int a, int b, int c, int d);
+    void make_tile(std::vector<std::pair<int,int>> temp,int a, int b, int c, int d);
     bool has_wfc_ended(std::vector<std::vector<Tile>> world);
     bool has_wfc_ended(int* verified, int n);
     void update(std::vector<std::vector<Tile>> world, int x, int y, int* verified);

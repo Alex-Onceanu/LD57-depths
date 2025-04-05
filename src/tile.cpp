@@ -16,7 +16,7 @@ Tile::Tile()
     }
 }
 
-Tile::Tile(int id, std::pair<int,int> sides[4]){
+Tile::Tile(int id, std::vector<std::pair<int,int>> sides){
     id = id;
     for (int i = 0; i < 4; i++){
         sides[i].first = sides[i].first;
