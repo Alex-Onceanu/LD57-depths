@@ -13,11 +13,11 @@ World::~World()
     
 }
 
-void World::input()
+void World::input(std::vector<std::optional<sf::Event>> events)
 {
     for(auto& e : entities)
     {
-        e->input();
+        e->input(events);
     }
 }
 

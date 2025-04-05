@@ -11,10 +11,13 @@ int main()
     std::unique_ptr<World> w = std::make_unique<World>();
 
     sf::Clock clock;
+    std::vector<std::optional<sf::Event>> events;
 
     while (window.isOpen())
     {
         float dt = clock.restart().asSeconds();
+
+        events.clear();
 
         while (const std::optional event = window.pollEvent())
         {
@@ -22,9 +25,13 @@ int main()
             {
                 window.close();
             }
+            else
+            {
+                events.push_back(event);
+            }
         }
 
-        w->input();
+        w->input(events);
         w->process(dt);
         w->draw(window);
 

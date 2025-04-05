@@ -13,7 +13,7 @@ Camera::Camera(sf::Vector2f *__following, sf::Vector2f resolution)
     view.setSize(rect.size);
 }
 
-void Camera::input()
+void Camera::input(std::vector<std::optional<sf::Event>> events)
 {
 
 }

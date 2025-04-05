@@ -8,7 +8,7 @@ public:
     Camera(sf::Vector2f *__following, sf::Vector2f resolution);
     ~Camera() {};
 
-    void input();
+    void input(std::vector<std::optional<sf::Event>> events);
     void process(float dt);
     void draw(sf::RenderWindow& window);
 

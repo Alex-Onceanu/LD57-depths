@@ -16,7 +16,7 @@ public:
     World();
     ~World();
 
-    void input();
+    void input(std::vector<std::optional<sf::Event>> events);
     void process(float dt);
     void draw(sf::RenderWindow& window);
 
