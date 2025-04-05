@@ -22,7 +22,8 @@ private :
     int n;
     void make_tile(std::pair<int,int> temp[4],int a, int b, int c, int d);
     bool has_wfc_ended(std::vector<std::vector<Tile>> world);
-    void update(std::vector<std::vector<Tile>> world, int x, int y);
+    bool has_wfc_ended(int* verified, int n);
+    void update(std::vector<std::vector<Tile>> world, int x, int y, int* verified);
     void update_one_step(std::vector<std::vector<Tile>> world, int x, int y, int* verified, int x_prec, int y_prec, int dir);
     std::vector<Tile> convert(std::vector<std::vector<Tile>> world);
 
