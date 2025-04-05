@@ -12,6 +12,6 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(main src/main.cpp src/world.cpp src/camera.cpp)
+add_executable(main src/main.cpp src/world.cpp src/camera.cpp src/tile.cpp src/wfc.cpp)
 target_compile_features(main PRIVATE cxx_std_20)
 target_link_libraries(main PRIVATE SFML::Graphics)
