@@ -2,11 +2,12 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <memory>
 #include <vector>
 
 #include "entity.hpp"
 
-class World
+class World 
 {
 public:
     World();
@@ -17,5 +18,5 @@ public:
     void draw(sf::RenderWindow& window);
 
 private:
-    std::vector<Entity> entities;
+    std::vector<std::unique_ptr<Entity>> entities;
 };

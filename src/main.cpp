@@ -7,7 +7,7 @@ int main()
     auto window = sf::RenderWindow(sf::VideoMode({1366u, 768u}), "Ludum Dare 57");
     window.setFramerateLimit(60);
     window.setPosition({ 77,156 });
-
+ 
     std::unique_ptr<World> w = std::make_unique<World>();
 
     sf::Clock clock;
