@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "world.hpp"
 
 int main()
@@ -6,7 +8,7 @@ int main()
     window.setFramerateLimit(60);
     window.setPosition({ 77,156 });
 
-    World* w = new World();
+    std::unique_ptr<World> w = std::make_unique<World>();
 
     sf::Clock clock;
 
@@ -29,6 +31,4 @@ int main()
         window.clear({ 80,80,80 });
         window.display();
     }
-
-    delete w;
 }
