@@ -4,7 +4,7 @@
 
 int main()
 {
-    auto window = sf::RenderWindow(sf::VideoMode({1366u, 768u}), "Ludum Dare 57");
+    auto window = sf::RenderWindow(sf::VideoMode({300u, 150u}), "Ludum Dare 57");
     window.setFramerateLimit(60);
     window.setPosition({ 77,156 });
  
@@ -31,11 +31,11 @@ int main()
             }
         }
 
+        window.clear({ 255,255,255 });
         w->input(events);
         w->process(dt);
         w->draw(window);
 
-        window.clear({ 80,80,80 });
         window.display();
     }
 }
