@@ -7,10 +7,11 @@
 
 #include "tile.hpp"
 
-Tile::Tile(int id, int sides[4]){
+Tile::Tile(int id, std::pair<int,int> sides[4]){
     id = id;
     for (int i = 0; i < 4; i++){
-        sides[i] = sides[i];
+        sides[i].first = sides[i].first;
+        sides[i].second = sides[i].second;
     }
 }
 
