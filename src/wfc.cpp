@@ -15,6 +15,12 @@ Wfc::Wfc(int _tile_shapes, int _materials)
 
 void Wfc::update_one_step(std::vector<std::vector<Tile>> world, int x, int y, int *verified, int x_prec, int y_prec, int dir)
 {
+    for(int i = 0; i < n; i++)
+    {
+        if(i % width == 0) std::cout << std::endl;
+        std::cout << verified[i] << " ";
+    }
+    std::cout << std::endl;
     if (!verified[y * width + x])
     {
         std::cout << "not verified !" << std::endl;
@@ -22,25 +28,27 @@ void Wfc::update_one_step(std::vector<std::vector<Tile>> world, int x, int y, in
         std::vector<Tile> newPossibilities;
         std::vector<int> idPossibilities;
 
-        // std::cout << "On veut acceder a l'element" << y_prec * width + x_prec << "d'un vector de taille " << world.size() << std::endl;
+        std::cout << "On veut acceder a l'element" << y_prec * width + x_prec << "d'un vector de taille " << world.size() << std::endl;
 
         for (auto &tl : world[y_prec * width + x_prec])
         {
-            std::cout << "On veut acceder a l'element " << y * width + x << " d'un vector de taille 1" << std::endl;
+            std::cout << "On veut acceder a l'element " << y * width + x << " d'un vecteur de taille " << world.size()<<std::endl;
             auto tv = tl.compatible_list(world[y * width + x], dir);
+
             for (auto &t2 : tv)
             {
                 if (std::find(idPossibilities.begin(), idPossibilities.end(), t2.getId()) == idPossibilities.end())
                 {
-                    std::cout << "On ajoute ";
-                    printTile(t2.sides);
-                    std::cout << "a new possibilities" << std::endl;
+                    // std::cout << "On ajoute ";
+                    // printTile(t2.sides);
+                    // std::cout << "a new possibilities" << std::endl;
                     newPossibilities.push_back(t2);
+                    idPossibilities.push_back(t2.getId());
                 }
             }
         }
         verified[y * width + x] = 1;
-        std::cout << "Taille finale de new possibilites : " << newPossibilities.size() << std::endl;
+        // std::cout << "Taille finale de new possibilites : " << newPossibilities.size() << std::endl;
 
         for (int i = 0; i < 4; i++)
         {
@@ -109,13 +117,13 @@ std::vector<Tile> Wfc::wfc(int _width, int _height, int _n)
     n = _n;
     srand(time(NULL));
     std::vector<Tile> full;
-    // for (int i = 0; i < materials*tile_shapes+1; i++){
-    //     int temp_array[4] = {i, i, i, i};
+    
+    std::pair<int, int> **tileTypes = new std::pair<int, int>*[materials * tile_shapes + 1];
+    for(int i = 0; i < materials * tile_shapes + 1; i++)
+    {
+        tileTypes[i] = new std::pair<int, int>[4];
+    }
 
-    //     Tile temp(i, temp_array);
-    //     full.push_back(temp);
-    // }
-    std::pair<int, int> *tileTypes[materials * tile_shapes + 1];
     std::pair<int, int> temp[4];
     for (int i = 0; i < materials + 1; i++)
     {
@@ -126,6 +134,7 @@ std::vector<Tile> Wfc::wfc(int _width, int _height, int _n)
                 for (int l = 0; l < materials + 1; l++)
                 {
                     make_tile(temp, i, j, k, l);
+                    printTile(temp);
                     tileTypes[i * (materials + 1) * (materials + 1) * (materials + 1) + j * (materials + 1) * (materials + 1) + k * (materials + 1) + l] = temp;
                 }
             }
@@ -134,9 +143,9 @@ std::vector<Tile> Wfc::wfc(int _width, int _height, int _n)
 
     for (int i = 0; i < materials * tile_shapes + 1; i++)
     {
-        std::cout << "bouclesque, tile shapes = " << tile_shapes << std::endl;
-        Tile temp(i, tileTypes[i]);
-        full.push_back(temp);
+        // std::cout << "bouclesque, tile shapes = " << tile_shapes << std::endl;
+        Tile temp2(i, tileTypes[i]);
+        full.push_back(temp2);
     }
 
     std::cout << "taille de full : " << full.size()<<std::endl;
@@ -170,6 +179,13 @@ std::vector<Tile> Wfc::wfc(int _width, int _height, int _n)
         update(world, jsp % width, jsp / width);
     }
     std::cout << "Longueur de world : " << world.size() << std::endl;
+
+    // for(int i = 0; i < materials * tile_shapes + 1; i++)
+    // {
+    //     delete[] tileTypes[i];
+    // }
+    // delete[] tileTypes;
+
     return convert(world);
 }
 

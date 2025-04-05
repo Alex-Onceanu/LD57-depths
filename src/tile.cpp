@@ -32,10 +32,11 @@ bool Tile::compatible(Tile other, int dir){
 //  filtre t_list pour ne garder que les éléments compatibles avec this
 std::vector<Tile> Tile::compatible_list(std::vector<Tile> t_list, int dir) {
     std::vector<Tile> comp;
-    std::cout << "compatible list go !" << std::endl;
+    // std::cout << "compatible list go !" << std::endl;
     for (int i = 0; i < t_list.size(); i++) {
         if (compatible(t_list[i], dir)) {
             comp.push_back(t_list[i]);
+            // std::cout << "id : " << t_list[i].id << std::endl;
         }
     }
     return comp;
