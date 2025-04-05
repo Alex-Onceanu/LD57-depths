@@ -2,14 +2,14 @@
 
 from PIL import Image
 
-frameW = 64
-frameH = 64
+frameW = 32
+frameH = 32
 
-nbCols = 13
-nbLines = 1
+nbCols = 15
+nbLines = 2
 
-prePath = "sol/"
-pathPerLine = [""]
+prePath = "final_tm-3/"
+pathPerLine = ["a", "b"]
 postPath = ".png"
 
 base = Image.new(mode="RGBA", size=(frameW * nbCols, frameH * nbLines))
