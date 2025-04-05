@@ -6,6 +6,11 @@ World::World()
 {
     auto c = std::make_unique<Camera>(nullptr, sf::Vector2f({ RES_X,RES_Y }));
     entities.push_back(std::move(c));
+
+    Wfc generator = Wfc(15, 2);
+    auto res = generator.wfc(MAP_WIDTH, MAP_HEIGHT, MAP_HEIGHT * MAP_WIDTH);
+
+    
 }
 
 World::~World()

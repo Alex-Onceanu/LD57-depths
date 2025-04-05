@@ -7,6 +7,15 @@
 
 #include "tile.hpp"
 
+Tile::Tile()
+{
+    id = 0;
+    for (int i = 0; i < 4; i++){
+        sides[i].first = 0;
+        sides[i].second = 0;
+    }
+}
+
 Tile::Tile(int id, std::pair<int,int> sides[4]){
     id = id;
     for (int i = 0; i < 4; i++){
@@ -16,7 +25,8 @@ Tile::Tile(int id, std::pair<int,int> sides[4]){
 }
 
 bool Tile::compatible(Tile other, int dir){
-    return sides[dir]==other.sides[(dir+2)%4];
+    return  sides[dir].first == other.sides[(dir+2)%4].second 
+        and sides[dir].second == other.sides[(dir+2)%4].first;
 }
 
 //  filtre t_list pour ne garder que les éléments compatibles avec this
@@ -28,4 +38,9 @@ std::vector<Tile> Tile::compatible_list(std::vector<Tile> t_list, int dir) {
         }
     }
     return comp;
+}
+
+sf::IntRect Tile::getRect()
+{
+    return sf::IntRect( { 32 * ((id % 16) - 1) , 32 * id / 16 },{ 32,32 } );
 }
