@@ -24,7 +24,7 @@ int main()
             }
         }
         window.clear({ 80,80,80 });
-        w->input();
+        w->input(window.pollEvent());
         w->process(dt);
         w->draw(window);
 
