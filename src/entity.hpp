@@ -5,9 +5,9 @@
 class Entity
 {
 public:
-    Entity() {};
+    virtual ~Entity() = default;
 
-    virtual void input();
-    virtual void process(float dt);
-    virtual void draw(sf::RenderWindow& window);
+    virtual void input() = 0;
+    virtual void process(float dt) = 0;
+    virtual void draw(sf::RenderWindow& window) = 0;
 };

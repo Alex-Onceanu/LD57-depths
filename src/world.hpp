@@ -3,8 +3,12 @@
 #include <SFML/Graphics.hpp>
 
 #include <vector>
+#include <memory>
 
 #include "entity.hpp"
+
+constexpr int RES_X = 1366;
+constexpr int RES_Y = 768;
 
 class World
 {
@@ -17,5 +21,5 @@ public:
     void draw(sf::RenderWindow& window);
 
 private:
-    std::vector<Entity> entities;
+    std::vector<std::unique_ptr<Entity>> entities;
 };
