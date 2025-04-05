@@ -29,4 +29,6 @@ private:
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<Tile> map;
     std::vector<sf::Sprite> mapSprites;
+    //std::vector<sf::Texture> mapTextures;
+    sf::Texture arrTextures[576];
 };

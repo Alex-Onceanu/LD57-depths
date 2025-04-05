@@ -20,11 +20,14 @@ private :
     int width;
     int height;
     int n;
-    void make_tile(std::vector<std::pair<int,int>> temp,int a, int b, int c, int d);
+    void make_tile(std::vector<std::pair<int,int>>* temp,int a, int b, int c, int d);
     bool has_wfc_ended(std::vector<std::vector<Tile>> world);
     bool has_wfc_ended(int* verified, int n);
     void update(std::vector<std::vector<Tile>> world, int x, int y, int* verified);
+    void update2(std::vector<std::vector<Tile>>* world, int x, int y, int* verified);
     void update_one_step(std::vector<std::vector<Tile>> world, int x, int y, int* verified, int x_prec, int y_prec, int dir);
     std::vector<Tile> convert(std::vector<std::vector<Tile>> world);
+    bool isValid(int a, int b, int c, int d);
+    int pickMin(std::vector<std::vector<Tile>> world, int* verified, int n);
 
 };

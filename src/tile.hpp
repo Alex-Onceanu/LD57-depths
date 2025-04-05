@@ -15,8 +15,9 @@ class Tile{
         std::vector<std::pair<int,int>> sides;
 
         Tile();
-        Tile(int id, std::vector<std::pair<int,int>> sides); //string sprite
-        
+        Tile(int _id, std::vector<std::pair<int,int>> sides); //string sprite
+        Tile(int _id, std::vector<std::pair<int,int>>* sides);
+        Tile copy();
         bool compatible(Tile other, int dir); //dir = 0 si other est à droite, 1 si other est en dessous, 2 si other est à gauche, ou 3 si other est au dessus de this 
         std::vector<Tile> compatible_list(std::vector<Tile> t_list, int dir);
         sf::IntRect getRect();

@@ -18,9 +18,12 @@ World::World()
     int i = 0;
     for(auto& t : map)
     {
-        const sf::Texture texture("assets/tilemap.png");
-        sf::Sprite sprite(texture);
-        sprite.setTextureRect(t.getRect());
+        sf::Texture texture = sf::Texture("../../assets/tilemap.png");
+        arrTextures[i] = sf::Texture("../../assets/tilemap.png");
+        //sf::Sprite sprite(std::move(texture));
+        //sf::Sprite* sprite = new sf::Sprite(texture);
+        sf::Sprite* sprite = new sf::Sprite(arrTextures[i]);
+        sprite->setTextureRect(t.getRect());
         
         // std::cout << "print tile : ";
         // generator.printTile(t.sides);
@@ -28,11 +31,12 @@ World::World()
         
         float x = (i % MAP_WIDTH) * 32;
         float y = (i / MAP_WIDTH) * 32;
-        sprite.setPosition({ x,y });
-        mapSprites.push_back(sprite);
+        sprite->setPosition({ x,y });
+        mapSprites.push_back(*sprite);
+        //mapTextures.push_back(texture);
         i++;
     }
-
+    std::cout<<"on a fait "<<i<<" tours"<<std::endl;
     std::cout << "Mon buffle, j'ai fini d'initialiser mapSprites." << std::endl;
 }
 
@@ -59,11 +63,13 @@ void World::process(float dt)
 
 void World::draw(sf::RenderWindow& window)
 {
+    //std::cout<<"on est chokbar dans le draw"<<std::endl;
     for(auto& t : mapSprites)
     {
+        //std::cout<<"tour"<<std::endl;
         window.draw(t);
     }
-
+    //std::cout<<"on est heureux dans le 69"<<std::endl;
     for(auto& e : entities)
     {
         e->draw(window);
