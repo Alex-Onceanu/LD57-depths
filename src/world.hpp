@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <memory>
 #include <vector>
 #include <memory>
 
@@ -10,7 +11,7 @@
 constexpr int RES_X = 1366;
 constexpr int RES_Y = 768;
 
-class World
+class World 
 {
 public:
     World();
@@ -21,5 +22,6 @@ public:
     void draw(sf::RenderWindow& window);
 
 private:
+    std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::unique_ptr<Entity>> entities;
 };
