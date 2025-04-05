@@ -4,7 +4,7 @@ int main()
 {
     auto window = sf::RenderWindow(sf::VideoMode({1366u, 768u}), "Ludum Dare 57");
     window.setFramerateLimit(60);
-    window.setPosition({ 277,156 });
+    window.setPosition({ 77,156 });
 
     while (window.isOpen())
     {
