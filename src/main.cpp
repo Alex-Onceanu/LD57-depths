@@ -23,12 +23,11 @@ int main()
                 window.close();
             }
         }
-
+        window.clear({ 80,80,80 });
         w->input();
         w->process(dt);
         w->draw(window);
 
-        window.clear({ 80,80,80 });
         window.display();
     }
 }

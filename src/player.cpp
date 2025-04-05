@@ -17,16 +17,22 @@ void Player::input()
 
 }
 
-void Player::process(float dt){
+void Player::process(float dt)
+{
       speed.y += grav.y;    
 
       timeSinceLastAnim += dt;
       pos += speed * dt;
-      if(pos.y > 768){
+      if(pos.y > 750){
          speed = (-1.0f) * speed;
       }
       sprite->setTextureRect(sf::IntRect({0,0},{64,64}));
       sprite->setPosition(pos);
       
+}
+
+void Player::draw(sf::RenderWindow& window)
+{ 
+    window.draw(*sprite);
 }
 

@@ -8,7 +8,7 @@ public:
     ~Player();
     void input();
     void process(float dt);
-    void draw(sf::RenderWindow& window) {};
+    void draw(sf::RenderWindow& window);
 private:
     int spriteW = 64;
     const int NB_FRAMES = 4;
@@ -17,10 +17,10 @@ private:
     const float FRAME_DURATION = 0.25;
     const float g = 9.81;
     float timeSinceLastAnim = 0.0;
-    sf::Vector2f pos{ 100.0,110.0 };
+    sf::Vector2f pos{ 32.0,32.0 };
     const float SPEED_VAL = 224.0;
-    sf::Vector2f speed = { 50.0,0.0 };
-    sf::Vector2f grav = {0.0, static_cast<float>(8.0*(16.0/1.7) * g)};
+    sf::Vector2f speed = { 0.0,0.0 };
+    sf::Vector2f grav = {0.0, static_cast<float>(4.0*(16.0/1.7) * g)};
 
     sf::Texture texture;
     sf::Sprite* sprite;
