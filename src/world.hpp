@@ -27,5 +27,6 @@ public:
 
 private:
     std::vector<std::unique_ptr<Entity>> entities;
-    Tile map[MAP_WIDTH][MAP_HEIGHT];
+    std::vector<Tile> map;
+    std::vector<sf::Sprite> mapSprites;
 };
