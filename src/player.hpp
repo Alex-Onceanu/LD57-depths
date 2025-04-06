@@ -13,16 +13,18 @@ public:
     void draw(sf::RenderWindow& window);
 private:
   //actions
+    //Jump
     bool anythingPressed = false;
     bool jmping = false;
     int frames_since_jmp = 100;
+    //Bomb
     bool bombing = false;
-    
     float boom_time = 0.5;
     float float_time = 0.11;
-    bool sliding = false;
+    //slide 
+     bool sliding = false;
     float slide_time = 1.;
-    
+ 
   //Sprite
     int spriteW = 32;
     const int NB_FRAMES = 6;
@@ -56,5 +58,7 @@ private:
 //fonctions
     bool blocked(sf::Vector2f pos);
     float jumpAction(float time); 
+    void bombAction(float tb,float time);
+    void slideAction(float ts,float time);
 };
 
