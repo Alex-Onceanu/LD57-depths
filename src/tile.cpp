@@ -2,6 +2,14 @@
 
 #include <iostream>
 
+Tile::Tile()
+{
+    topRight = -1;
+    botRight = -1;
+    botLeft = -1;
+    topLeft = -1;
+}
+
 Tile::Tile(int __topRight, int __botRight, int __botLeft, int __topLeft)
 {
     topRight = __topRight;

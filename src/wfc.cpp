@@ -114,19 +114,54 @@ Tile Wave::getFirstTile()
     return possibilities[0];
 }
 
-Wfc::Wfc(int __width, int __height, int nbMaterials)
-    : width(__width),
-    height(__height)
+int Wave::dist(Wave& other)
 {
-    for(int y = 0; y < height; y++)
+    return abs(myX - other.getX()) + abs(myY - other.getY());
+}
+
+
+
+// _______________________________________________________________________________
+// ___________________________________WFC algorithm_______________________________
+// _______________________________________________________________________________
+
+
+
+Wfc::Wfc(int __nbMateriaux)
+    : nbMateriaux(__nbMateriaux)
+{
+
+}
+
+void Wfc::init(int w, int h, std::vector<Tile> initial)
+{
+    assert(initial.size() == w * h);
+
+    width = w;
+    height = h;
+
+    waves.clear();
+
+    for(int y = 0; y < h; y++)
     {
-        for(int x = 0; x < width; x++)
+        for(int x = 0; x < w; x++)
         {
-            waves.push_back(Wave(x, y, nbMaterials));
+            waves.push_back(Wave(x, y, nbMateriaux));
         }
     }
 
-    assert(waves.size() == width * height);
+    for(int y = 0; y < h; y++)
+    {
+        for(int x = 0; x < w; x++)
+        {
+            Tile t = initial[y * w + x];
+            if(t.getTopRight() != -1)
+            {
+                waves[get(x, y)].collapseToOne(t);
+                propagate(waves[get(x, y)]);
+            }
+        }
+    }
 }
 
 int Wfc::get(int x, int y)
@@ -134,20 +169,23 @@ int Wfc::get(int x, int y)
     return y * width + x;
 }
 
-Wave Wfc::getMinimalEntropy()
+// Choisit la Wave d'entropie minimale, en cas d'égalité choisit la distance minimale avec center
+Wave Wfc::getMinimalEntropy(Wave& center)
 {
     assert(waves.size() > 0);
 
-    int minEntropy = 80;
-    Wave argMin = waves[0];    
+    int minEntropy = 80;              // valeur arbitrairement grande
+    int minDist = width * height + 1; // ici aussi
+    Wave argMin = waves[0];           // ici valeur osef;
 
     for(auto& w : waves)
     {
         int e = w.getEntropy();
-        if((e == minEntropy and rand() % 2 == 1) or (e < minEntropy and e > 1))
+        if((e == minEntropy and w.dist(center) < minDist) or (e < minEntropy and e > 1))
         {
             minEntropy = e;
             argMin = w;
+            minDist = w.dist(center);
         }
     }
 
@@ -170,7 +208,7 @@ int Wfc::getHeight()
 }
 
 
-bool Wfc::propagate()
+void Wfc::propagate(Wave& start)
 {
     std::vector<bool> visited;
     for(auto& w : waves)
@@ -178,107 +216,56 @@ bool Wfc::propagate()
         visited.push_back(false);
     }
 
-    std::queue<Wave> todo;
-
-    Wave start = getMinimalEntropy();
-    if(start.getEntropy() == 1)
-    {
-        return true;
-    }
-
-    assert(start.getEntropy() > 1);
-
+    Wave curr = start;
     visited[get(start.getX(), start.getY())] = true;
-
-    start.collapseToOne();
     waves[get(start.getX(), start.getY())] = start;
 
+    std::queue<Wave> todo;
     todo.push(start);
+
+    auto spread = [&](int lin){ 
+        Wave other = waves[lin];
+
+        if(not visited[lin])
+        {
+            int oldEntropy = other.getEntropy();
+            other.collapseFromWave(curr);
+            waves[lin] = other;
+            if(other.getEntropy() != oldEntropy)
+            {
+                todo.push(other);
+                visited[lin] = true;
+            }
+        }
+    };
 
     while(not todo.empty())
     {
-        Wave curr = todo.front();
+        curr = todo.front();
+        todo.pop();
         int currX = curr.getX();
         int currY = curr.getY();
-        int lin = -1;
 
-        if(currX > 0)
-        {
-            lin = get(currX - 1, currY);
-            Wave other = waves[lin];
-
-            if(not visited[lin])
-            {
-                int oldEntropy = other.getEntropy();
-                other.collapseFromWave(curr);
-                waves[lin] = other;
-                if(other.getEntropy() != oldEntropy)
-                {
-                    todo.push(other);
-                    visited[lin] = true;
-                }
-            }
-        }
-        if(currX < width - 1)
-        {
-            lin = get(currX + 1, currY);
-            Wave other = waves[lin];
-
-            if(not visited[lin])
-            {
-                int oldEntropy = other.getEntropy();
-                other.collapseFromWave(curr);
-                waves[lin] = other;
-                if(other.getEntropy() != oldEntropy)
-                {
-                    todo.push(other);
-                    visited[lin] = true;
-                }
-            }
-        }
-        if(currY > 0)
-        {
-            lin = get(currX, currY - 1);
-            Wave other = waves[lin];
-
-            if(not visited[lin])
-            {
-                int oldEntropy = other.getEntropy();
-                other.collapseFromWave(curr);
-                waves[lin] = other;
-                if(other.getEntropy() != oldEntropy)
-                {
-                    todo.push(other);
-                    visited[lin] = true;
-                }
-            }
-        }
-        if(currY < height - 1)
-        {
-            lin = get(currX, currY + 1);
-            Wave other = waves[lin];
-
-            if(not visited[lin])
-            {
-                int oldEntropy = other.getEntropy();
-                other.collapseFromWave(curr);
-                waves[lin] = other;
-                if(other.getEntropy() != oldEntropy)
-                {
-                    todo.push(other);
-                    visited[lin] = true;
-                }
-            }
-        }
-
-        todo.pop();
+        if(currX > 0)           spread(get(currX - 1, currY));
+        if(currX < width - 1)   spread(get(currX + 1, currY));
+        if(currY > 0)           spread(get(currX, currY - 1));
+        if(currY < height - 1)  spread(get(currX, currY + 1));
     }
-    return false;
 }
 
-std::vector<Tile> Wfc::collapse()
+std::vector<Tile> Wfc::collapse(int w, int h, std::vector<Tile> initial)
 {
-    while(not propagate());
+    init(w, h, initial);
+
+    Wave origin = getMinimalEntropy(waves[get(w / 2, h / 2)]);
+    int currentEntropy = origin.getEntropy();
+    while(currentEntropy > 1)
+    {
+        origin.collapseToOne();
+        propagate(origin);
+        origin = getMinimalEntropy(origin);
+        currentEntropy = origin.getEntropy();
+    }
 
     std::vector<Tile> res;
     for(auto& w : waves)
@@ -286,4 +273,18 @@ std::vector<Tile> Wfc::collapse()
         res.push_back(w.getFirstTile());
     }
     return res;
+}
+
+std::vector<Tile> Wfc::emptyTileset(int w, int h)
+{
+    std::vector<Tile> ans;
+
+    for(int y = 0; y < h; y++)
+    {
+        for(int x = 0; x < w; x++)
+        {
+            ans.push_back(Tile());
+        }
+    }
+    return ans;
 }

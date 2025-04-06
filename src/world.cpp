@@ -19,8 +19,9 @@ World::World()
     std::cout << "Mon buffle, je m'apprête à wfc-er." << std::endl;
 
     const int TEST_W = 24;
-    Wfc generator = Wfc(TEST_W, TEST_W, 1);
-    map = generator.collapse();
+    Wfc generator = Wfc(1);
+    
+    map = generator.collapse(TEST_W, TEST_W, Wfc::emptyTileset(TEST_W, TEST_W));
 
     std::cout << "Mon buffle, j'ai fini de wfc-er." << std::endl;
 
@@ -37,11 +38,11 @@ World::World()
         float y = (i / TEST_W) * 32;
         sprite.setPosition({ 64 + x, 64 + y });
         mapSprites.push_back(sprite);
-        // if(x < 0.9)
-        // {
-        //     std::cout << std::endl;
-        // }
-        // std::cout << t.getRect().position.x << " ";
+        if(x < 0.9)
+        {
+            std::cout << std::endl;
+        }
+        std::cout << t.getRect().position.x << " ";
         i++;
     }
 

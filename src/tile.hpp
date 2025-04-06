@@ -5,6 +5,7 @@
 class Tile
 {
 public:
+    Tile();
     Tile(int __topRight, int __botRight, int __botLeft, int __topLeft);
 
     int getTopRight();

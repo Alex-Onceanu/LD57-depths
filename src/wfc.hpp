@@ -17,6 +17,7 @@ public:
     int getY();
     Tile getFirstTile();
     std::vector<Tile> getTiles();
+    int dist(Wave& other);
 
 private:
     std::vector<Tile> possibilities;
@@ -26,19 +27,23 @@ private:
 class Wfc
 {
 public:
-    Wfc(int __width, int __height, int nbMaterials);
+    Wfc(int __nbMateriaux);
 
-    std::vector<Tile> collapse();
+    std::vector<Tile> collapse(int w, int h, std::vector<Tile> initial);
     int getWidth();
     int getHeight();
     std::vector<Wave> getWaves();
     int get(int x, int y);
+    
+    static std::vector<Tile> emptyTileset(int w, int h);
 
 private:
-    Wave getMinimalEntropy();
-    bool propagate();
+    Wave getMinimalEntropy(Wave& center);
+    void propagate(Wave& start);
+    void init(int w, int h, std::vector<Tile> initial);
 
 private:
     std::vector<Wave> waves;
     int width, height;
+    int nbMateriaux;
 };
