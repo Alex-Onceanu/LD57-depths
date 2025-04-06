@@ -10,8 +10,8 @@ Camera::Camera(sf::Vector2f *__following)
 
 void Camera::process(float dt)
 {
-    if(following)
-        view.setCenter(*following);
+    if(following){}
+        view.setCenter({512, following->y});
 }
 void Camera::draw(sf::RenderWindow& window)
 {

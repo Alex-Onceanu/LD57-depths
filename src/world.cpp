@@ -6,6 +6,7 @@
 #include "entity.hpp"
 #include "player.hpp"
 #include "camera.hpp"
+#include "fog.hpp"
 #include "wfc.hpp"
 
 World::World()
@@ -49,12 +50,12 @@ World::World()
         mapSprites.push_back(sprite);
         i++;
     }
-
-    std::unique_ptr<Player> j = std::make_unique<Player>(&map, NB_TILES_X, sf::Vector2f({16 + RES_X / 2 - NB_TILES_X * 16, RES_Y / 2}));
+    auto f = std::make_unique<Fog>();
+    std::unique_ptr<Player> j = std::make_unique<Player>(&map, NB_TILES_X, sf::Vector2f({16 + RES_X / 2 - NB_TILES_X * 16, RES_Y / 2}), f->getHeight());
     auto c = std::make_unique<Camera>(j->getPosPtr());
-
     entities.push_back(std::move(j));
     entities.push_back(std::move(c));
+    entities.push_back(std::move(f));
 
 }
 

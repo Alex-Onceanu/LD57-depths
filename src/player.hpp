@@ -8,7 +8,7 @@
 class Player : public Entity
 {
 public:
-	Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f __mapOffset);
+	Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f __mapOffset, float* _fogHeight);
 	~Player();
 	void input(std::vector<std::optional<sf::Event>> events, float time);
 	void process(float dt);
@@ -19,6 +19,7 @@ private:
 	std::vector<Tile>* map;
 	int mapWidth;
 	sf::Vector2f mapOffset;
+  bool isDead = false;
 	// actions
 	// Jump
 	bool anythingPressed = false;
@@ -55,7 +56,7 @@ private:
 	float g;
 	float v0;
 	float timeSinceLastAnim = 0.0;
-	sf::Vector2f pos{553.0, 100.0};
+	sf::Vector2f pos{553.0, 300.0};
 	const float SPEED_VAL = 224.0;
 	sf::Vector2f speed = {0.0, 0.0};
 	sf::Vector2f grav = {0.0, static_cast<float>(5.0 * (16.0 / 1.7) * 10)};
@@ -65,6 +66,7 @@ private:
 		sf::Keyboard::Key::Left};
 	sf::Texture texture;
 	sf::Sprite *sprite;
+  sf::Vector2f spawnPoint{96,96};
 	// time
 	sf::Clock myClock;
 	float t0 = myClock.restart().asSeconds();
@@ -83,5 +85,7 @@ private:
 	bool collisionRight();
 	bool collisionUp();
 	bool collisionLeft();
-	
+	//fog
+  float* fogHeight;
+  bool fogCollision();
 };

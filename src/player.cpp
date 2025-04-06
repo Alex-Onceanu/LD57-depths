@@ -8,13 +8,13 @@
 #include <iostream>
 #include <ostream>
 
-Player::Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f __mapOffset)
+Player::Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f __mapOffset, float* _fogHeight)
 	: map(__map),
 	  mapOffset(__mapOffset),
 	  mapWidth(__mapWidth)
 {
 	texture = sf::Texture("assets/miner_grid.png");
-
+  fogHeight = _fogHeight;
 	sprite = new sf::Sprite(texture);
 	sprite->setOrigin({16.0, 16.0});
 	sprite->setTextureRect(sf::IntRect({0, 0}, {32, 32}));
@@ -94,6 +94,7 @@ bool Player::collisionLeft()
 }
 bool Player::collisionUp()
 {
+
 	return false;
 }
 bool Player::collisionRight()
@@ -154,6 +155,10 @@ bool Player::collisionDown()
 bool Player::collision()
 {
 	return collisionDown();
+}
+
+bool Player::fogCollision(){
+  return *fogHeight > pos.y;
 }
 
 void Player::input(std::vector<std::optional<sf::Event>> events, float time)
@@ -233,44 +238,52 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 void Player::process(float dt)
 {
 	sf::Vector2f oldPos = sf::Vector2f({pos.x, pos.y});
+  if (fogCollision()){
+    std::cout<<"ptdr chuis mort"<<std::endl;
+    isDead = true;
+  }
+  if (isDead){
+    sprite->setPosition(spawnPoint);
+  }
+  else {
+    if (not anythingPressed)
+    {
+      timeSinceLastAnim = 0.0;
+      currentFrame = 0;
+    }
+    else if (timeSinceLastAnim > FRAME_DURATION)
+    {
+      timeSinceLastAnim = 0.0;
+      currentFrame = (1 + currentFrame) % NB_FRAMES;
+    }
+    if (gravity)
+    {
+      speed.y += 2 * grav.y * dt;
+    }
+    timeSinceLastAnim += dt;
+    pos += speed * dt;
+    int decal = 0;
+    if (jmping || frames_since_jmp <= 20)
+    {
+      decal = 5;
+      // std::cout << "jmping" << std::endl;
+    }
+    sprite->setTextureRect(sf::IntRect({(currentFrame + decal) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));
 
-	if (not anythingPressed)
-	{
-		timeSinceLastAnim = 0.0;
-		currentFrame = 0;
-	}
-	else if (timeSinceLastAnim > FRAME_DURATION)
-	{
-		timeSinceLastAnim = 0.0;
-		currentFrame = (1 + currentFrame) % NB_FRAMES;
-	}
-	if (gravity)
-	{
-		speed.y += 2 * grav.y * dt;
-	}
-	timeSinceLastAnim += dt;
-	pos += speed * dt;
-	int decal = 0;
-	if (jmping || frames_since_jmp <= 20)
-	{
-		decal = 5;
-		// std::cout << "jmping" << std::endl;
-	}
-	sprite->setTextureRect(sf::IntRect({(currentFrame + decal) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));
+    if (collisionDown())
+    {
+      pos.y = oldPos.y;
+      speed.y = 0.0;
+      canJump = true;
+      jmping = false;
+    }
+    else
+    {
+      canJump = false;
+    }
 
-	if (collisionDown())
-	{
-		pos.y = oldPos.y;
-		speed.y = 0.0;
-		canJump = true;
-		jmping = false;
-	}
-	else
-	{
-		canJump = false;
-	}
-
-	sprite->setPosition(pos);
+    sprite->setPosition(pos);
+  }
 }
 
 void Player::draw(sf::RenderWindow &window)
