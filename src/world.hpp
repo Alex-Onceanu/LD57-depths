@@ -22,7 +22,7 @@ public:
     World();
     ~World();
 
-    void input(std::vector<std::optional<sf::Event>> events);
+    void input(std::vector<std::optional<sf::Event>> events,float time);
     void process(float dt);
     void draw(sf::RenderWindow& window);
 

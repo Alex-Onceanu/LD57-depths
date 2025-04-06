@@ -1,7 +1,6 @@
+#include <ctime>
 #include <memory>
-#include <time.h>
-#include <cstdlib>
-
+#include <iostream>
 #include "world.hpp"
 
 int main()
@@ -14,12 +13,13 @@ int main()
 
     sf::Clock clock;
     std::vector<std::optional<sf::Event>> events;
+    float timeSinceStart = 0.;
     srand(time(NULL));
 
     while (window.isOpen())
     {
         float dt = clock.restart().asSeconds();
-
+        timeSinceStart += dt; 
         events.clear();
 
         while (const std::optional event = window.pollEvent())
@@ -35,7 +35,8 @@ int main()
         }
         window.clear({ 80,80,80 });
 
-        w->input(events);
+        window.clear({ 255,255,255 });
+        w->input(events,timeSinceStart);
         w->process(dt);
         w->draw(window);
 
