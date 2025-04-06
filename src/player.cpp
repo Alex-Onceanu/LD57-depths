@@ -1,5 +1,6 @@
 #include <optional>
 #include "player.hpp"
+
 Player::Player()
 {
     texture = sf::Texture("assets/output.png");

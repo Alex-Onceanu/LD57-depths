@@ -18,10 +18,9 @@ World::World()
 
     std::cout << "Mon buffle, je m'apprête à wfc-er." << std::endl;
 
-    const int TEST_W = 24;
     Wfc generator = Wfc(1);
     
-    map = generator.collapse(TEST_W, TEST_W, Wfc::emptyTileset(TEST_W, TEST_W));
+    map = generator.collapse(NB_TILES_X, NB_TILES_Y, Wfc::emptyTileset(NB_TILES_X, NB_TILES_Y));
 
     std::cout << "Mon buffle, j'ai fini de wfc-er." << std::endl;
 
@@ -31,18 +30,17 @@ World::World()
     for(auto& t : map)
     {
         mapTexs[i] = sf::Texture("assets/tilemap.png");
+        mapTexs[i].setSmooth(false);
         sf::Sprite sprite(mapTexs[i]);
         sprite.setTextureRect(t.getRect());
+        sprite.setOrigin({16.0,16.0});
         
-        float x = (i % TEST_W) * 32;
-        float y = (i / TEST_W) * 32;
-        sprite.setPosition({ 64 + x, 64 + y });
+        float x = (i % NB_TILES_X) * 64;
+        float y = (i / NB_TILES_X) * 64;
+
+        sprite.setPosition({ 32 + x + RES_X / 2 - NB_TILES_X * 32, y + RES_Y / 2 });
+        sprite.setScale({2.0, 2.0});
         mapSprites.push_back(sprite);
-        if(x < 0.9)
-        {
-            std::cout << std::endl;
-        }
-        std::cout << t.getRect().position.x << " ";
         i++;
     }
 
