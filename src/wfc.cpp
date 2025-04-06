@@ -2,6 +2,7 @@
 #include <queue>
 #include <cassert>
 #include <iostream>
+#include <ctime>
 
 #include "wfc.hpp"
 
@@ -158,7 +159,7 @@ void Wfc::init(int w, int h, std::vector<Tile> initial)
             if(t.getTopRight() != -1)
             {
                 waves[get(x, y)].collapseToOne(t);
-                propagate(waves[get(x, y)]);
+                //propagate(waves[get(x, y)]);
             }
         }
     }
@@ -253,10 +254,87 @@ void Wfc::propagate(Wave& start)
     }
 }
 
+
+//ptet modifie en place waves et renvoie void
+void Wfc::prétraitement(int w, int h, std::vector<Tile> initial){
+    init(w, h, initial);
+    std::srand(std::time({}));
+    int i = rand() % (w-4); // on enlève les murs d'épaisseur 2 sur les côtés, ils sont déterministes
+    int j = rand() % 14; //pour le premier tour seulement
+    std::cout<<"on choisit la tile "<<j<<" de la wave "<<i+2<<std::endl;
+    Wave temp(w,h,1);
+    for (int l = 0; l < (w)*h ; l++){
+        if (l%(w) == 0){
+            std::cout<<std::endl;
+        }
+        std::cout<<waves[l].getTiles().size()<<" ";
+    }
+    std::cout<<std::endl;
+    waves[i+w+2].collapseToOne(temp.getTiles()[j]);
+    std::cout<<"ça devrait changer bordel"<<std::endl;
+    for (int l = 0; l < (w)*h ; l++){
+        if (l%(w) == 0){
+            std::cout<<std::endl;
+        }
+        std::cout<<waves[l].getTiles().size()<<" ";
+    }
+    std::cout<<std::endl;
+    propagate(waves[i+w+2]);
+    for (int l = 0; l < (w)*h ; l++){
+        if (l%(w) == 0){
+            std::cout<<std::endl;
+        }
+        std::cout<<waves[l].getTiles().size()<<" ";
+    }
+    std::cout<<std::endl;
+    waves[i+2] = getMinimalEntropy(waves[i]);
+    std::cout<<"jusqu'ici tout va bien, on fait "<<(w-4)*h<<" tours"<<std::endl;
+    for (int l = 0; l < (w)*h ; l++){
+        if (l%(w) == 0){
+            std::cout<<std::endl;
+        }
+        std::cout<<waves[l].getTiles().size()<<" ";
+    }
+    std::cout<<std::endl;
+    int depth = 1; // on continbue jusqu'à depth = h(-1 ?)
+    while (depth < h){
+        std::cout<<"un tour de plus, depth = "<<depth<<std::endl;
+        int k = rand()%3; //direction, 0 = droite, 1 = bas, 2 = gauche
+        if ((k == 2 and i == 0) or (k == 0 and i == w-5)){ //on est tout à gauche donc on peut pas aller plus à gauche, où tout à droite et mm problème
+            k = 1;
+        } 
+        if (k==1){
+            depth++;
+            std::cout<<"on génère un entier entre 0 et "<<waves[i+(w-4)*depth].getTiles().size()<<", indice "<<i+(w-4)*depth<<std::endl;
+            waves[i+w*depth].collapseToOne(waves[i+w*depth].getTiles()[rand() % waves[i+w*depth].getTiles().size()]);
+            propagate(waves[i+w*depth]);
+            waves[i+w*depth] = getMinimalEntropy(waves[i+w*depth]);
+        } else if(k==0){
+            i++;
+            waves[i+w*depth].collapseToOne(waves[i+w*depth].getTiles()[rand() % waves[i+w*depth].getTiles().size()]);
+            propagate(waves[i+w*depth]);
+            waves[i+w*depth] = getMinimalEntropy(waves[i+w*depth]);
+        } else {
+            i--;
+            waves[i+w*depth].collapseToOne(waves[i+w*depth].getTiles()[rand() % waves[i+w*depth].getTiles().size()]);
+            propagate(waves[i+w*depth]);
+            waves[i+w*depth] = getMinimalEntropy(waves[i+w*depth]);
+        }
+    }
+
+}
+
 std::vector<Tile> Wfc::collapse(int w, int h, std::vector<Tile> initial)
 {
     init(w, h, initial);
-
+    for (int l = 0; l < w*h ; l++){
+        if (l%w == 0){
+            std::cout<<std::endl;
+        }
+        std::cout<<waves[l].getTiles().size()<<" ";
+    }
+    std::cout<<std::endl;
+    prétraitement(w,h,initial);
     Wave origin = getMinimalEntropy(waves[get(w / 2, h / 2)]);
     int currentEntropy = origin.getEntropy();
     while(currentEntropy > 1)

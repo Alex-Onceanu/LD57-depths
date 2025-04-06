@@ -20,6 +20,10 @@ World::World()
     {
         initial[j] = Tile(0, 0, 0, 0);
     }
+    for (int i = 1; i< NB_TILES_Y; i++){
+        initial[i*NB_TILES_X] = Tile(0,0,3,3);
+        initial[(i+1)*NB_TILES_X-1] = Tile(3,3,0,0);
+    }
     // for(int i = 0; i < NB_TILES_Y; i++)
     // {
     //     for(int j = 0; j < NB_TILES_X; j++)

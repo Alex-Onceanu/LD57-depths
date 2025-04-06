@@ -28,7 +28,7 @@ class Wfc
 {
 public:
     Wfc(int __nbMateriaux);
-
+    void prétraitement(int w, int h, std::vector<Tile> initial);
     std::vector<Tile> collapse(int w, int h, std::vector<Tile> initial);
     int getWidth();
     int getHeight();
