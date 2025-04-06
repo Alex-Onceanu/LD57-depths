@@ -10,8 +10,6 @@
 
 World::World()
 {
-    std::unique_ptr<Player> j = std::make_unique<Player>();
-    entities.push_back(std::move(j));
 
     // auto c = std::make_unique<Camera>(nullptr, sf::Vector2f({ RES_X,RES_Y }));
     // entities.push_back(std::move(c));
@@ -20,7 +18,12 @@ World::World()
 
     Wfc generator = Wfc(1);
     
-    map = generator.collapse(NB_TILES_X, NB_TILES_Y, Wfc::emptyTileset(NB_TILES_X, NB_TILES_Y));
+    std::vector<Tile> initial = Wfc::emptyTileset(NB_TILES_X, NB_TILES_Y);
+    for(int i = 0; i < NB_TILES_X; i++)
+    {
+        initial[i] = Tile(0, 0, 0, 0);
+    }
+    map = generator.collapse(NB_TILES_X, NB_TILES_Y, initial);
 
     std::cout << "Mon buffle, j'ai fini de wfc-er." << std::endl;
 
@@ -43,7 +46,8 @@ World::World()
         i++;
     }
 
-    std::cout << "\nMon buffle, j'ai fini d'initialiser mapSprites." << std::endl;
+    std::unique_ptr<Player> j = std::make_unique<Player>(&map, NB_TILES_X, sf::Vector2f({16 + RES_X / 2 - NB_TILES_X * 16, RES_Y / 2}));
+    entities.push_back(std::move(j));
 }
 
 World::~World()
