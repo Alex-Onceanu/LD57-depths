@@ -18,8 +18,8 @@ World::World()
     int i = 0;
     for(auto& t : map)
     {
-        sf::Texture texture = sf::Texture("../../assets/tilemap.png");
-        arrTextures[i] = sf::Texture("../../assets/tilemap.png");
+        sf::Texture texture = sf::Texture("assets/tilemap.png");
+        arrTextures[i] = sf::Texture("assets/tilemap.png");
         //sf::Sprite sprite(std::move(texture));
         //sf::Sprite* sprite = new sf::Sprite(texture);
         sf::Sprite* sprite = new sf::Sprite(arrTextures[i]);
