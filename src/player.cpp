@@ -8,7 +8,7 @@
 #include <iostream>
 #include <ostream>
 
-Player::Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f __mapOffset, float *_fogHeight)
+Player::Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f __mapOffset, float *_fogHeight, std::vector<sf::Sprite>* mapSpritesPtr)
 	: map(__map),
 	  mapOffset(__mapOffset),
 	  mapWidth(__mapWidth)
@@ -264,7 +264,7 @@ bool Player::collisionDown()
 	{
 		if (std::abs(closestCenterX - pos.x) < std::abs((closestCenterX - tileSize / 2.0) - pos.x))
 		{
-			return closestTile.getBotLeft() or closestTile.getTopRight();
+			return closestTile.getBotLeft() or closestTile.getBotRight();
 		}
 		else
 		{
@@ -282,6 +282,287 @@ bool Player::fogCollision()
 {
 	return *fogHeight > pos.y;
 }
+
+
+void Player::mineBotLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
+{
+	Tile old = (*map)[x + y * mapWidth];
+	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), old.getBotRight(), 0, old.getTopLeft());
+	
+	imposedPtr->push_back({ x - 1,y });
+	imposedPtr->push_back({ x - 1,y + 1 });
+	imposedPtr->push_back({ x,y + 1 });
+}
+
+void Player::mineBotLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY)
+{
+	Tile old = (*map)[x + y * mapWidth];
+	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), old.getBotRight(), 0, old.getTopLeft());
+	
+	if(x - 1 != otherX and y != otherY) imposedPtr->push_back({ x - 1,y });
+	if(x - 1 != otherX and y + 1 != otherY) imposedPtr->push_back({ x - 1,y + 1 });
+	if(x != otherX and y + 1 != otherY) imposedPtr->push_back({ x,y + 1 });
+}
+
+void Player::mineBotRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
+{
+	Tile old = (*map)[x + y * mapWidth];
+	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), 0, old.getBotLeft(), old.getTopLeft());
+	
+	imposedPtr->push_back({ x + 1,y });
+	imposedPtr->push_back({ x + 1,y + 1 });
+	imposedPtr->push_back({ x,y + 1 });
+}
+
+void Player::mineBotRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY)
+{
+	Tile old = (*map)[x + y * mapWidth];
+	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), 0, old.getBotLeft(), old.getTopLeft());
+	
+	if(x + 1 != otherX and y != otherY) imposedPtr->push_back({ x + 1,y });
+	if(x + 1 != otherX and y + 1 != otherY) imposedPtr->push_back({ x + 1,y + 1 });
+	if(x != otherX and y + 1 != otherY) imposedPtr->push_back({ x,y + 1 });
+}
+
+void Player::mineTopLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
+{
+	Tile old = (*map)[x + y * mapWidth];
+	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), old.getBotRight(), old.getBotLeft(), 0);
+	
+	imposedPtr->push_back({ x - 1,y });
+	imposedPtr->push_back({ x - 1,y - 1 });
+	imposedPtr->push_back({ x,y - 1 });
+}
+
+void Player::mineTopLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY)
+{
+	Tile old = (*map)[x + y * mapWidth];
+	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), old.getBotRight(), old.getBotLeft(), 0);
+	
+	if(x - 1 != otherX and y != otherY) imposedPtr->push_back({ x - 1,y });
+	if(x - 1 != otherX and y - 1 != otherY) imposedPtr->push_back({ x - 1,y - 1 });
+	if(x != otherX and y - 1 != otherY) imposedPtr->push_back({ x,y - 1 });
+}
+
+void Player::mineTopRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
+{
+	Tile old = (*map)[x + y * mapWidth];
+	(*map)[x + y * mapWidth] = Tile(0, old.getBotRight(), old.getBotLeft(), old.getTopLeft());
+	
+	imposedPtr->push_back({ x - 1,y });
+	imposedPtr->push_back({ x - 1,y - 1 });
+	imposedPtr->push_back({ x,y - 1 });
+}
+
+void Player::mineTopRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY)
+{
+	Tile old = (*map)[x + y * mapWidth];
+	(*map)[x + y * mapWidth] = Tile(0, old.getBotRight(), old.getBotLeft(), old.getTopLeft());
+	
+	if(x + 1 != otherX and y != otherY) imposedPtr->push_back({ x + 1,y });
+	if(x + 1 != otherX and y - 1 != otherY) imposedPtr->push_back({ x + 1,y - 1 });
+	if(x != otherX and y - 1 != otherY) imposedPtr->push_back({ x,y - 1 });
+}
+
+void Player::updateMapAfterMining(std::vector<sf::Vector2i> imposed)
+{
+	if(imposed.size() <= 0) return;
+
+	int minX = 10000;
+	int maxX = 0;
+	int minY = 10000;
+	int maxY = 0;
+
+	for(sf::Vector2i& v : imposed)
+	{
+		minX = std::min(minX, v.x);
+		maxX = std::max(maxX, v.x);
+		minY = std::min(minY, v.y);
+		maxY = std::max(maxY, v.y);
+	}
+
+	std::vector<Tile> localWfc;
+	int hisW = 3 + maxX - minX;
+	int hisH = 3 + maxY - minY;
+	for(int y = minY - 1; y <= maxY + 1; y++)
+	{
+		for(int x = minX - 1; x <= maxX + 1; x++)
+		{
+			localWfc.push_back((*map)[y * mapWidth + x]);
+		}
+	}
+
+	for(sf::Vector2i& v : imposed)
+	{
+		localWfc[v.y * hisW + v.x] = Tile(-1, -1, -1, -1);
+	}
+
+	std::vector<Tile> newLocalMap = wfcPtr->collapse(hisW, hisH, localWfc);
+	int i = 0;
+	for(int y = minY - 1; y <= maxY + 1; y++)
+	{
+		for(int x = minX - 1; x <= maxX + 1; x++)
+		{
+			(*map)[y * mapWidth + x] = newLocalMap[i++];
+			(*mapSpritesPtr)[y * mapWidth + x].setTextureRect((*map)[y * mapWidth + x].getRect());
+		}
+	}
+}
+
+void Player::mineDown() 
+{
+	std::vector<sf::Vector2i> imposed;
+
+	const int tileSize = 32;
+	int closestCenterj = static_cast<int>(pos.x - mapOffset.x) / tileSize;
+	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
+
+	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size()) return;
+
+	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
+	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
+
+	if (pos.x > closestCenterX)
+	{
+		if (std::abs(closestCenterX - pos.x) < std::abs((closestCenterX + tileSize / 2.0) - pos.x))
+		{
+			mineBotLeft(closestCenterj, closestCenteri, &imposed);
+			mineBotRight(closestCenterj, closestCenteri, &imposed);
+		}
+		else
+		{
+			if ((closestCenterj + 1) >= mapWidth)
+			{
+				mineBotRight(closestCenterj, closestCenteri, &imposed);
+			}
+			else
+			{
+				mineBotRight(closestCenterj, closestCenteri, &imposed, closestCenterj + 1, closestCenteri);
+				mineBotLeft(closestCenterj + 1, closestCenteri, &imposed, closestCenterj, closestCenteri);
+			}
+		}
+	}
+	else
+	{
+		if (std::abs(closestCenterX - pos.x) < std::abs((closestCenterX - tileSize / 2.0) - pos.x))
+		{
+			mineBotLeft(closestCenterj, closestCenteri, &imposed);
+			mineBotRight(closestCenterj, closestCenteri, &imposed);
+		}
+		else
+		{
+			if ((closestCenterj - 1) < 0)
+			{
+				mineBotLeft(closestCenterj, closestCenteri, &imposed);
+			}
+			else
+			{
+				mineBotLeft(closestCenterj, closestCenteri, &imposed, closestCenterj - 1, closestCenteri);
+				mineBotRight(closestCenterj - 1, closestCenteri, &imposed, closestCenterj, closestCenteri);
+			}
+		}
+	}
+
+	updateMapAfterMining(imposed);
+}
+
+void Player::mineRight()
+{
+	std::vector<sf::Vector2i> imposed;
+
+	const int tileSize = 32;
+	int closestCenterj = static_cast<int>(pos.x + 9.0 - mapOffset.x) / tileSize;
+	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
+	// std::cout << "i : " << closestCenteri << "j : " << closestCenterj << std::endl;
+	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size()) return;
+
+	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
+	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
+
+	if (pos.y < closestCenterY)
+	{
+		if (std::abs(closestCenterY - pos.y) < std::abs((closestCenterY - tileSize / 2.0) - pos.y))
+		{
+			mineTopRight(closestCenterj, closestCenteri, &imposed);
+			mineBotRight(closestCenterj, closestCenteri, &imposed);
+		}
+		else
+		{
+			if ((closestCenteri - 1) < 0)
+			{
+				mineTopRight(closestCenterj, closestCenteri, &imposed);
+			}
+			else
+			{
+				mineTopRight(closestCenterj, closestCenteri, &imposed, closestCenterj, closestCenteri - 1);
+				mineBotRight(closestCenterj, closestCenteri - 1, &imposed, closestCenterj, closestCenteri);
+			}
+		}
+	}
+	else
+	{
+		if (std::abs(closestCenterY - pos.y) < std::abs((closestCenterY + tileSize / 2.0) - pos.y))
+		{
+			mineTopRight(closestCenterj, closestCenteri, &imposed);
+			mineBotRight(closestCenterj, closestCenteri, &imposed);
+		}
+		else
+		{
+			mineBotRight(closestCenterj, closestCenteri, &imposed, closestCenterj, closestCenteri + 1);
+			mineTopRight(closestCenterj, closestCenteri + 1, &imposed, closestCenterj, closestCenteri);
+		}
+	}
+
+	updateMapAfterMining(imposed);
+}
+
+void Player::mineLeft()
+{
+	std::vector<sf::Vector2i> imposed;
+
+	const int tileSize = 32;
+	int closestCenterj = static_cast<int>(pos.x + 20.0 - mapOffset.x) / tileSize;
+	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
+	// std::cout << "i : " << closestCenteri << "j : " << closestCenterj << std::endl;
+	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size()) return;
+
+	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
+	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
+
+	if (pos.y < closestCenterY)
+	{
+		if (std::abs(closestCenterY - pos.y) < std::abs((closestCenterY - tileSize / 2.0) - pos.y))
+		{
+			mineTopLeft(closestCenterj, closestCenteri, &imposed);
+			mineBotLeft(closestCenterj, closestCenteri, &imposed);
+		}
+		else
+		{
+			if ((closestCenteri - 1) < 0)
+			{
+				mineTopLeft(closestCenterj, closestCenteri, &imposed);
+			}
+			mineTopLeft(closestCenterj, closestCenteri, &imposed, closestCenterj, closestCenteri - 1);
+			mineBotLeft(closestCenterj, closestCenteri - 1, &imposed, closestCenterj, closestCenteri);
+		}
+	}
+	else
+	{
+		if (std::abs(closestCenterY - pos.y) < std::abs((closestCenterY + tileSize / 2.0) - pos.y))
+		{
+			mineTopLeft(closestCenterj, closestCenteri, &imposed);
+			mineBotLeft(closestCenterj, closestCenteri, &imposed);
+		}
+		else
+		{
+			mineBotLeft(closestCenterj, closestCenteri, &imposed, closestCenterj, closestCenteri + 1);
+			mineTopLeft(closestCenterj, closestCenteri + 1, &imposed, closestCenterj, closestCenteri);
+		}
+	}
+
+	updateMapAfterMining(imposed);
+}
+
 
 void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 {
@@ -407,6 +688,8 @@ void Player::process(float dt)
 			speed.y = 0.0;
 			canJump = true;
 			jmping = false;
+			// mineDown();
+			// segfault ici
 		}
 		else
 		{

@@ -1,6 +1,7 @@
 #pragma once
 #include "entity.hpp"
 #include "tile.hpp"
+#include "wfc.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -8,7 +9,7 @@
 class Player : public Entity
 {
 public:
-	Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f __mapOffset, float* _fogHeight);
+	Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f __mapOffset, float* _fogHeight, std::vector<sf::Sprite>* mapSpritesPtr);
 	~Player();
 	void input(std::vector<std::optional<sf::Event>> events, float time);
 	void process(float dt);
@@ -17,7 +18,10 @@ public:
 
 private:
 	std::vector<Tile>* map;
+	std::vector<sf::Sprite>* mapSpritesPtr;
 	int mapWidth;
+	Wfc* wfcPtr;
+
 	sf::Vector2f mapOffset;
   bool isDead = false;
 	// actions
@@ -87,6 +91,23 @@ private:
 	bool collisionRight();
 	bool collisionUp();
 	bool collisionLeft();
+
+	void mineDown();
+	void mineRight();
+	void mineLeft();
+
+	void mineBotLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr);
+	void mineBotRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr);
+	void mineTopLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr);
+	void mineTopRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr);
+
+	void mineBotLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr , int otherX, int otherY);
+	void mineBotRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY);
+	void mineTopLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr , int otherX, int otherY);
+	void mineTopRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY);
+
+	void updateMapAfterMining(std::vector<sf::Vector2i> imposed);
+
 	//fog
   float* fogHeight;
   bool fogCollision();
