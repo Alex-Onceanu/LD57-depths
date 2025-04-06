@@ -12,8 +12,8 @@
 constexpr int RES_X = 1366;
 constexpr int RES_Y = 768;
 
-constexpr int MAP_WIDTH = 32;
-constexpr int MAP_HEIGHT = 18;
+constexpr int MAP_WIDTH = 12;
+constexpr int MAP_HEIGHT = 48;
 
 class World
 {
@@ -30,5 +30,5 @@ private:
     std::vector<Tile> map;
     std::vector<sf::Sprite> mapSprites;
     //std::vector<sf::Texture> mapTextures;
-    sf::Texture arrTextures[576];
+    sf::Texture arrTextures[12*48];
 };

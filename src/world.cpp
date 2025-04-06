@@ -23,8 +23,11 @@ World::World()
         //sf::Sprite sprite(std::move(texture));
         //sf::Sprite* sprite = new sf::Sprite(texture);
         sf::Sprite* sprite = new sf::Sprite(arrTextures[i]);
-        sprite->setTextureRect(t.getRect());
-        
+        if (t.getId() == 0){
+            sprite->setTextureRect(sf::IntRect({0,0}, {0,0}));
+        } else {
+            sprite->setTextureRect(t.getRect());
+        }
         // std::cout << "print tile : ";
         // generator.printTile(t.sides);
         // std::cout << std::endl;

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
@@ -5,15 +7,13 @@
 #include <ctime>
 #include <cstdio>
 
-#pragma once
-
 class Tile{
     private : 
         int id;
         //string sprite; nom du .png
     public : 
         std::vector<std::pair<int,int>> sides;
-
+        void printTile(std::vector<std::pair<int, int>> temp);
         Tile();
         Tile(int _id, std::vector<std::pair<int,int>> sides); //string sprite
         Tile(int _id, std::vector<std::pair<int,int>>* sides);
