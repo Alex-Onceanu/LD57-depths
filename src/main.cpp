@@ -31,7 +31,7 @@ int main()
             }
         }
 
-        window.clear({ 255,255,255 });
+        window.clear({ 0,0,0 });
         w->input(events);
         w->process(dt);
         w->draw(window);

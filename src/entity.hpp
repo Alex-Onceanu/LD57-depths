@@ -10,4 +10,5 @@ public:
     virtual void input(std::vector<std::optional<sf::Event>> events) = 0;
     virtual void process(float dt) = 0;
     virtual void draw(sf::RenderWindow& window) = 0;
+    
 };

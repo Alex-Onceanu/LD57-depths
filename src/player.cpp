@@ -86,6 +86,7 @@ void Player::process(float dt)
       }
 
       speed.y += 2*grav.y*dt;    
+      //speed.y -= 0.1*dt;
 
       timeSinceLastAnim += dt;
       pos += speed * dt;
