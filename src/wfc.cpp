@@ -257,7 +257,7 @@ std::vector<Tile> Wfc::collapse(int w, int h, std::vector<Tile> initial)
 {
     init(w, h, initial);
 
-    Wave origin = getMinimalEntropy(waves[get(w / 2, h / 2)]);
+    Wave origin = getMinimalEntropy(waves[get(rand() % w, rand() % h)]);
     int currentEntropy = origin.getEntropy();
     while(currentEntropy > 1)
     {

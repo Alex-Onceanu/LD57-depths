@@ -66,12 +66,15 @@ private:
 		sf::Keyboard::Key::Left};
 	sf::Texture texture;
 	sf::Sprite *sprite;
-  sf::Vector2f spawnPoint{96,96};
+  	sf::Vector2f spawnPoint{96,96};
+	float speedXForStepBuf;
+
 	// time
 	sf::Clock myClock;
 	float t0 = myClock.restart().asSeconds();
 	float time_boom;
 	float time_slide;
+
 	// fonctions
 	bool blocked(sf::Vector2f pos);
 	float jumpAction(float time);
@@ -80,7 +83,6 @@ private:
 	float slideEasing(float t);
     float bombEasing(float t);
 	
-	bool collision();
 	bool collisionDown();
 	bool collisionRight();
 	bool collisionUp();

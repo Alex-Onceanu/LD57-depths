@@ -13,13 +13,14 @@ World::World()
 {
     std::cout << "Mon buffle, je m'apprête à wfc-er." << std::endl;
 
-    Wfc generator = Wfc(1);
+    Wfc generator = Wfc(2);
     
     std::vector<Tile> initial = Wfc::emptyTileset(NB_TILES_X, NB_TILES_Y);
     for(int j = 0; j < NB_TILES_X; j++)
     {
         initial[j] = Tile(0, 0, 0, 0);
     }
+    initial[3 + NB_TILES_X] = Tile(0, 1, 1, 0);
     // for(int i = 0; i < NB_TILES_Y; i++)
     // {
     //     for(int j = 0; j < NB_TILES_X; j++)
