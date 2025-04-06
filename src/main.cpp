@@ -1,5 +1,6 @@
+#include <ctime>
 #include <memory>
-
+#include <iostream>
 #include "world.hpp"
 
 int main()
@@ -12,11 +13,11 @@ int main()
 
     sf::Clock clock;
     std::vector<std::optional<sf::Event>> events;
-
+    float timeSinceStart = 0.; 
     while (window.isOpen())
     {
         float dt = clock.restart().asSeconds();
-
+        timeSinceStart += dt; 
         events.clear();
 
         while (const std::optional event = window.pollEvent())
