@@ -11,4 +11,5 @@ public:
   
     virtual void process(float dt) = 0;
     virtual void draw(sf::RenderWindow& window) = 0;
+    
 };
