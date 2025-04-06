@@ -28,7 +28,7 @@ bool Player::blocked(sf::Vector2f pos){
 float Player::jumpAction(float time)
 {
     speed.y = v0;
-    std::cout << "speedy is" << speed.y << std::endl;
+    // std::cout << "speedy is" << speed.y << std::endl;
     jmping = true;
     gravity = true;
     frames_since_jmp = 0;
@@ -62,7 +62,7 @@ void Player::slideAction(float t_s,float time){
 
 if(t_s<slide_time && sliding && !jmping)
   {
-    std::cout << "im sliding " << std::endl;
+    // std::cout << "im sliding " << std::endl;
     int sens = (currentDirection == 1) ? -1 : 1;
      if( blocked(pos) )
     {
@@ -109,14 +109,14 @@ void Player::input(std::vector<std::optional<sf::Event>> events,float time)
   if(boomPressed)
   {
     bombing = true;
-    std::cout << "boom" << std::endl;
+    // std::cout << "boom" << std::endl;
     time_boom = time;
   } 
   if(slidePressed)
   {
     sliding = true;
     time_slide = time;
-    std::cout << "yogdolehihouuu" << std::endl;
+    // std::cout << "yogdolehihouuu" << std::endl;
   }
     float t_b  = myClock.getElapsedTime().asSeconds() - time_boom;
   //Bomb action
@@ -168,7 +168,7 @@ void Player::process(float dt)
       if(jmping || frames_since_jmp <=20 )
       {
           decal = 5;
-          std::cout << "jmping" << std::endl;
+          // std::cout << "jmping" << std::endl;
       }
       sprite->setTextureRect(sf::IntRect({(currentFrame+decal) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));
       sprite->setPosition(pos);

@@ -10,8 +10,8 @@
 
 World::World()
 {
-    // std::unique_ptr<Player> j = std::make_unique<Player>();
-    // entities.push_back(std::move(j));
+    std::unique_ptr<Player> j = std::make_unique<Player>();
+    entities.push_back(std::move(j));
 
     // auto c = std::make_unique<Camera>(nullptr, sf::Vector2f({ RES_X,RES_Y }));
     // entities.push_back(std::move(c));
@@ -35,11 +35,10 @@ World::World()
         sprite.setTextureRect(t.getRect());
         sprite.setOrigin({16.0,16.0});
         
-        float x = (i % NB_TILES_X) * 64;
-        float y = (i / NB_TILES_X) * 64;
+        float x = (i % NB_TILES_X) * 32;
+        float y = (i / NB_TILES_X) * 32;
 
-        sprite.setPosition({ 32 + x + RES_X / 2 - NB_TILES_X * 32, y + RES_Y / 2 });
-        sprite.setScale({2.0, 2.0});
+        sprite.setPosition({ 16 + x + RES_X / 2 - NB_TILES_X * 16, y + RES_Y / 2 });
         mapSprites.push_back(sprite);
         i++;
     }

@@ -34,12 +34,12 @@ private:
   //physics
     const float HANG_TIME = 36*FRAME_DURATION;
     const float VERTICAL = 500.; 
-    int sol  = 75;
+    int sol  = 300;
     bool gravity= true;
     float g;
     float v0;
     float timeSinceLastAnim = 0.0;
-    sf::Vector2f pos{ 100.0,0.0 };
+    sf::Vector2f pos{ 288.0,100.0 };
     const float SPEED_VAL = 224.0;
     sf::Vector2f speed = { 0.0,0.0 };
     sf::Vector2f grav = {0.0, static_cast<float>(5.0*(16.0/1.7) * 10)};
