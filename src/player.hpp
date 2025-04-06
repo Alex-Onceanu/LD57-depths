@@ -13,23 +13,31 @@ public:
     void draw(sf::RenderWindow& window);
 private:
   //actions
-    //Jump
     bool anythingPressed = false;
+    //Jump
     bool jmping = false;
     int frames_since_jmp = 100;
     //Bomb
     bool bombing = false;
-    float boom_time = 0.5;
-    float float_time = 0.11;
+    float boom_start = 0.5;
+    float boom_time = 1.;
+    float float_time = .8;
+    float a_bomb;
+    float b_bomb;
     //slide 
-     bool sliding = false;
-    float slide_time = 1.;
- 
+    bool sliding = false;
+    float slide_start = 1.;
+    float slide_time = .6;
+    float slide_dist = 50.;
+    float a_slide;
+    float b_slide;
+
   //Sprite
     int spriteW = 32;
     const int NB_FRAMES = 6;
     int currentFrame = 0;
     int currentDirection = 0;
+    int sens = (currentDirection == 1) ? -1 : 1;
     const float FRAME_DURATION = 0.1;
   //physics
     const float HANG_TIME = 36*FRAME_DURATION;
@@ -53,12 +61,12 @@ private:
 //time 
     sf::Clock myClock;
     float t0 = myClock.restart().asSeconds();
-    float time_boom;
-    float time_slide;
 //fonctions
     bool blocked(sf::Vector2f pos);
     float jumpAction(float time); 
     void bombAction(float tb,float time);
     void slideAction(float ts,float time);
+    float slideEasing(float t);
+    float bombEasing(float t);
 };
 
