@@ -21,11 +21,11 @@ World::~World()
     
 }
 
-void World::input(std::vector<std::optional<sf::Event>> events)
+void World::input(std::vector<std::optional<sf::Event>> events, float time)
 {
     for(auto& e : entities)
     {
-        e->input(events);
+        e->input(events,time);
     }
 }
 

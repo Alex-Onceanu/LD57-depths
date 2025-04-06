@@ -1,9 +1,11 @@
 #include <SFML/System/Clock.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <iterator>
 #include <optional>
 #include "player.hpp"
 #include <iostream>
+#include <ostream>
 Player::Player()
 {
     texture = sf::Texture("assets/miner_grid.png");
@@ -19,16 +21,29 @@ Player::~Player()
 {
   delete sprite;
 }
+bool Player::blocked(sf::Vector2f pos){
+  return false; //TODO: a modifier quand collisios etc
+}
 
-void Player::input(std::vector<std::optional<sf::Event>> events)
+float Player::jumpAction(float time)
 {
-    sf::Clock myClock;
-    float t0 = myClock.restart().asSeconds();
+    speed.y = v0;
+    std::cout << "speedy is" << speed.y << std::endl;
+    jmping = true;
+    gravity = true;
+    frames_since_jmp = 0;
+    return time; 
+}
+ 
+
+void Player::input(std::vector<std::optional<sf::Event>> events,float time)
+{
     int jmpPressed = false;
     int boomPressed = false;
+    int slidePressed = false;
+    sliding = false;
     jmping = false;
     anythingPressed = false;
-  sf::Time time  = myClock.getElapsedTime();
     for(auto event: events){
    if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
         {
@@ -42,29 +57,82 @@ void Player::input(std::vector<std::optional<sf::Event>> events)
           boomPressed = true;
           anythingPressed = true;
       }
+         if (keyPressed->scancode == sf::Keyboard::Scancode::RShift )
+      {
+          slidePressed = true;
+          anythingPressed = true;
+      }
+
         }
     }
-  if(jmpPressed && abs(pos.y-sol) <10 )
+  // JUMP
+  if(jmpPressed && pos.y == sol)
+      float time_jmp = jumpAction(time);
+    //BOOM
+  if(boomPressed)
   {
-    speed.y += v0;
-    jmping = true;
-    frames_since_jmp = 0;
+    bombing = true;
+    std::cout << "boom" << std::endl;
+    time_boom = time;
+  } 
+  if(slidePressed)
+  {
+    sliding = true;
+    time_slide = time;
+    std::cout << "yogdolehihouuu" << std::endl;
   }
-  
+    float t_b  = myClock.getElapsedTime().asSeconds() - time_boom;
+  /*std::cout << myClock.getElapsedTime().asSeconds() <<"time boom = " << time<<  std::endl;*/
+  //Bomb action
+  /*std::cout << " da" << t << std::endl;*/
+  if( t_b<boom_time && bombing)
+  {
+    
+    if(pos.y>=sol )
+    {
+      bombing = false; 
+      gravity = true;
+    }
+    if(t_b<float_time)
+    {
+      {
+        speed.y = 0.;
+        gravity = false;
+      }
+    }
+
+    else{
+      speed.y+= 100;
+      gravity = true;
+    }
+    speed.x = 0.;
+  }
+  //Slide action
+  float t_s  = myClock.getElapsedTime().asSeconds() - time_slide;
+  /*std::cout << " da" << t_b << std::endl;*/
+if(t_s<slide_time && sliding && !jmping)
+  {
+    std::cout << "im sliding " << std::endl;
+    int sens = (currentDirection == 1) ? -1 : 1;
+     if( blocked(pos) )
+    {
+      sliding = false; 
+    }
+    else{
+      speed.x= sens * 1000;
+    }
+  }
+ // Left and Right 
   for(int i = 0; i < 2; i++)
   {
 
-      if(sf::Keyboard::isKeyPressed(keyPerDirection[i]))
+      if(sf::Keyboard::isKeyPressed(keyPerDirection[i]) && !sliding)
       {
           currentDirection = i;
           speed.x = 100 * stepPerDirection[i];
           anythingPressed = true;
       }
-  }
-  if(boomPressed){
-    speed.y = 0;
-    speed.y= 1000;
-      }
+  } 
    frames_since_jmp++; 
     if(!anythingPressed){
     speed.x = 0;
@@ -84,13 +152,14 @@ void Player::process(float dt)
           timeSinceLastAnim = 0.0;
           currentFrame = (1 + currentFrame) % NB_FRAMES;
       }
-
+      if(gravity){
       speed.y += 2*grav.y*dt;    
-
+      }
       timeSinceLastAnim += dt;
       pos += speed * dt;
       if(pos.y >sol){
         speed.y = (0.0f) * speed.y;
+        
         pos.y = sol;   
       }
       int decal = 0;
