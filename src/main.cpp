@@ -1,4 +1,6 @@
 #include <memory>
+#include <time.h>
+#include <cstdlib>
 
 #include "world.hpp"
 
@@ -12,6 +14,7 @@ int main()
 
     sf::Clock clock;
     std::vector<std::optional<sf::Event>> events;
+    srand(time(NULL));
 
     while (window.isOpen())
     {
@@ -30,12 +33,12 @@ int main()
                 events.push_back(event);
             }
         }
+        window.clear({ 80,80,80 });
 
         w->input(events);
         w->process(dt);
         w->draw(window);
 
-        window.clear({ 80,80,80 });
         window.display();
     }
 }

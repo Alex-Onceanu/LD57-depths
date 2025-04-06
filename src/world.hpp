@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "entity.hpp"
+#include "tile.hpp"
 
 constexpr int RES_X = 1366;
 constexpr int RES_Y = 768;
@@ -23,5 +24,7 @@ public:
 
 private:
     std::vector<std::unique_ptr<Entity>> entities;
-    std::vector<std::unique_ptr<Entity>> entities;
+    std::vector<Tile> map;
+    std::vector<sf::Sprite> mapSprites;
+    sf::Texture* mapTexs;
 };

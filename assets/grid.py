@@ -5,7 +5,7 @@ from PIL import Image
 frameW = 32
 frameH = 32
 
-nbCols = 15
+nbCols = 16
 nbLines = 2
 
 prePath = "final_tm-3/"
@@ -16,7 +16,7 @@ base = Image.new(mode="RGBA", size=(frameW * nbCols, frameH * nbLines))
 
 for line in range(nbLines):
     for col in range(nbCols):
-        im = Image.open(prePath + pathPerLine[line] + str(col + 1) + postPath)
+        im = Image.open(prePath + pathPerLine[line] + str(col) + postPath)
         im2 = im.resize((frameW, frameH))
         
         base.paste(im2, (frameW * col, frameH * line))
