@@ -5,17 +5,15 @@
 class Camera : public Entity
 {
 public:
-    Camera(sf::Vector2f *__following, sf::Vector2f resolution);
+    Camera(sf::Vector2f *__following);
     ~Camera() {};
 
-    void input(std::vector<std::optional<sf::Event>> events);
+    void input(std::vector<std::optional<sf::Event>> events, float time) {};
     void process(float dt);
     void draw(sf::RenderWindow& window);
 
-    sf::Vector2f getPos();
     void setZoom(float coef);
 private:
     sf::View view;
     sf::Vector2f *following;
-    sf::FloatRect rect;
 };

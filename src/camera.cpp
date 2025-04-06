@@ -1,37 +1,21 @@
 #include "camera.hpp"
 
-Camera::Camera(sf::Vector2f *__following, sf::Vector2f resolution)
+Camera::Camera(sf::Vector2f *__following)
     : following(__following)
 {
-    rect = sf::FloatRect(0.5f * resolution, resolution);
-
-    if(following)
-    {
-        rect.position = *following - 0.5f * resolution;
-    }
-
-    view.setSize(rect.size);
-}
-
-void Camera::input(std::vector<std::optional<sf::Event>> events)
-{
-
+    view.setCenter({512.0, 288.0});
+    view.setSize({1024.0,576.0});
+    view.zoom(0.5f);
 }
 
 void Camera::process(float dt)
 {
     if(following)
-        rect.position = *following - 0.5f * rect.size;
+        view.setCenter(*following);
 }
-
 void Camera::draw(sf::RenderWindow& window)
 {
-    view.setCenter(rect.getCenter());
-}
-
-sf::Vector2f Camera::getPos()
-{
-    return rect.position;
+    window.setView(view);
 }
 
 void Camera::setZoom(float coef)

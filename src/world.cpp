@@ -10,19 +10,23 @@
 
 World::World()
 {
-
-    // auto c = std::make_unique<Camera>(nullptr, sf::Vector2f({ RES_X,RES_Y }));
-    // entities.push_back(std::move(c));
-
     std::cout << "Mon buffle, je m'apprête à wfc-er." << std::endl;
 
     Wfc generator = Wfc(1);
     
     std::vector<Tile> initial = Wfc::emptyTileset(NB_TILES_X, NB_TILES_Y);
-    for(int i = 0; i < NB_TILES_X; i++)
+    for(int j = 0; j < NB_TILES_X; j++)
     {
-        initial[i] = Tile(0, 0, 0, 0);
+        initial[j] = Tile(0, 0, 0, 0);
     }
+    // for(int i = 0; i < NB_TILES_Y; i++)
+    // {
+    //     for(int j = 0; j < NB_TILES_X; j++)
+    //     {
+    //         if(j == 0 or j == NB_TILES_X - 1)
+    //         initial[j + i * NB_TILES_X] = Tile(0, 0, 0, 0);
+    //     }
+    // }
     map = generator.collapse(NB_TILES_X, NB_TILES_Y, initial);
 
     std::cout << "Mon buffle, j'ai fini de wfc-er." << std::endl;
@@ -47,7 +51,11 @@ World::World()
     }
 
     std::unique_ptr<Player> j = std::make_unique<Player>(&map, NB_TILES_X, sf::Vector2f({16 + RES_X / 2 - NB_TILES_X * 16, RES_Y / 2}));
+    auto c = std::make_unique<Camera>(j->getPosPtr());
+
     entities.push_back(std::move(j));
+    entities.push_back(std::move(c));
+
 }
 
 World::~World()

@@ -8,17 +8,16 @@
 #include <iostream>
 #include <ostream>
 
-
 Player::Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f __mapOffset)
 	: map(__map),
-	mapOffset(__mapOffset),
-	mapWidth(__mapWidth)
+	  mapOffset(__mapOffset),
+	  mapWidth(__mapWidth)
 {
 	texture = sf::Texture("assets/miner_grid.png");
 
 	sprite = new sf::Sprite(texture);
 	sprite->setOrigin({16.0, 16.0});
-	sprite->setTextureRect(sf::IntRect({0, 0}, {16, 16}));
+	sprite->setTextureRect(sf::IntRect({0, 0}, {32, 32}));
 	g = 2 * VERTICAL / (HANG_TIME * HANG_TIME);
 	v0 = -2 * VERTICAL / HANG_TIME;
 }
@@ -31,7 +30,10 @@ bool Player::blocked(sf::Vector2f pos)
 {
 	return false; // TODO: a modifier quand collisios etc
 }
-
+float Player::slideEasing(float t)
+{
+	return (1 - t) * (1 - t) * (1 - t) * (1 - t);
+}
 float Player::jumpAction(float time)
 {
 	speed.y = v0;
@@ -41,47 +43,48 @@ float Player::jumpAction(float time)
 	frames_since_jmp = 0;
 	return time;
 }
+float Player::bombEasing(float time)
+{
+	return time;
+}
 void Player::bombAction(float t_b, float time)
 {
 	if (t_b < boom_time && bombing)
 	{
-
-		if (pos.y >= sol)
-		{
-			bombing = false;
-			gravity = true;
-		}
-		if (t_b < float_time)
-		{
-			{
-				speed.y = 0.;
-				gravity = false;
-			}
-		}
-
-		else
-		{
-			speed.y += 100;
-			gravity = true;
-		}
-		speed.x = 0.;
+		float t = (time - boom_start) / boom_time;
+		t = bombEasing(t);
+		float p = a_slide * t + (1 - t) * b_slide;
+		pos.y = p;
+		/*std::cout << 'a' << a_slide << ' '<< b_slide << t << std::endl;*/
 	}
+	// if (sliding && t_b >= slide_time)
+	// {
+	// 	sliding = false;
+	// }
 }
+
+sf::Vector2f* Player::getPosPtr()
+{
+	return &pos;
+}
+
 void Player::slideAction(float t_s, float time)
 {
-
+	if (jmping)
+	{
+		sliding = false; // pr que le slide n'arrive pas quand on retombe du sol
+	}
 	if (t_s < slide_time && sliding && !jmping)
 	{
-		// std::cout << "im sliding " << std::endl;
-		int sens = (currentDirection == 1) ? -1 : 1;
-		if (blocked(pos))
-		{
-			sliding = false;
-		}
-		else
-		{
-			speed.x = sens * 1000;
-		}
+		float t = (time - slide_start) / slide_time;
+		t = slideEasing(t);
+		float p = a_slide * t + (1 - t) * b_slide;
+		pos.x = p;
+		// std::cout << 'a' << a_slide << ' '<< b_slide << t << std::endl;
+	}
+	if (sliding && t_s >= slide_time)
+	{
+		sliding = false;
 	}
 }
 
@@ -104,7 +107,7 @@ bool Player::collisionDown()
 	int closestCenterj = static_cast<int>(pos.x - mapOffset.x) / tileSize;
 	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
 	// std::cout << "i : " << closestCenteri << "j : " << closestCenterj << std::endl;
-	if(closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size())
+	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size())
 	{
 		// std::cout << "pas de collision on est en dehors de la map" << std::endl;
 		return false;
@@ -114,15 +117,15 @@ bool Player::collisionDown()
 	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
 	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
 
-	if(pos.x > closestCenterX)
+	if (pos.x > closestCenterX)
 	{
-		if(std::abs(closestCenterX - pos.x) < std::abs((closestCenterX + tileSize / 2.0) - pos.x))
+		if (std::abs(closestCenterX - pos.x) < std::abs((closestCenterX + tileSize / 2.0) - pos.x))
 		{
 			return closestTile.getBotLeft() or closestTile.getBotRight();
 		}
 		else
 		{
-			if((closestCenterj + 1) >= mapWidth)
+			if ((closestCenterj + 1) >= mapWidth)
 			{
 				return closestTile.getBotRight();
 			}
@@ -132,13 +135,13 @@ bool Player::collisionDown()
 	}
 	else
 	{
-		if(std::abs(closestCenterX - pos.x) < std::abs((closestCenterX - tileSize / 2.0) - pos.x))
+		if (std::abs(closestCenterX - pos.x) < std::abs((closestCenterX - tileSize / 2.0) - pos.x))
 		{
 			return closestTile.getBotLeft() or closestTile.getTopRight();
 		}
 		else
 		{
-			if((closestCenterj - 1) < 0)
+			if ((closestCenterj - 1) < 0)
 			{
 				return closestTile.getBotLeft();
 			}
@@ -155,12 +158,13 @@ bool Player::collision()
 
 void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 {
+
 	int jmpPressed = false;
 	int boomPressed = false;
 	int slidePressed = false;
-	sliding = false;
-	jmping = false;
 	anythingPressed = false;
+	sens = (currentDirection == 1) ? -1 : 1;
+
 	for (auto event : events)
 	{
 		if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>())
@@ -174,10 +178,15 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 			{
 				boomPressed = true;
 				anythingPressed = true;
+				a_bomb = pos.y;
+				b_bomb = 1.;
 			}
 			if (keyPressed->scancode == sf::Keyboard::Scancode::RShift)
 			{
 				slidePressed = true;
+				a_slide = pos.x;
+				std::cout << sens << ' ' << currentDirection << std::endl;
+				b_slide = a_slide + sens * slide_dist;
 				anythingPressed = true;
 			}
 		}
@@ -190,28 +199,27 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 	{
 		bombing = true;
 		// std::cout << "boom" << std::endl;
-		time_boom = time;
+		boom_time = time;
 	}
 	if (slidePressed)
 	{
 		sliding = true;
-		time_slide = time;
-		// std::cout << "yogdolehihouuu" << std::endl;
+		slide_start = time;
 	}
-	float t_b = myClock.getElapsedTime().asSeconds() - time_boom;
+	float t_b = myClock.getElapsedTime().asSeconds() - boom_start;
 	// Bomb action
 	bombAction(t_b, time);
 	// Slide action
-	float t_s = myClock.getElapsedTime().asSeconds() - time_slide;
+	float t_s = myClock.getElapsedTime().asSeconds() - slide_start;
 	slideAction(t_s, time);
 	// Left and Right
 	for (int i = 0; i < 2; i++)
 	{
 
-		if (sf::Keyboard::isKeyPressed(keyPerDirection[i]) && !sliding)
+		if (sf::Keyboard::isKeyPressed(keyPerDirection[i]) && (slide_time - t_s < 0.23)) // pour qu'on puisse pas bouger avant quasi la fin du slide.
 		{
 			currentDirection = i;
-			speed.x = 100 * stepPerDirection[i];
+			pos.x += 3 * stepPerDirection[i];
 			anythingPressed = true;
 		}
 	}
@@ -250,11 +258,12 @@ void Player::process(float dt)
 	}
 	sprite->setTextureRect(sf::IntRect({(currentFrame + decal) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));
 
-	if(collisionDown())
+	if (collisionDown())
 	{
 		pos.y = oldPos.y;
 		speed.y = 0.0;
 		canJump = true;
+		jmping = false;
 	}
 	else
 	{

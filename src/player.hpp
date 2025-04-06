@@ -13,6 +13,7 @@ public:
 	void input(std::vector<std::optional<sf::Event>> events, float time);
 	void process(float dt);
 	void draw(sf::RenderWindow &window);
+	sf::Vector2f* getPosPtr();
 
 private:
 	std::vector<Tile>* map;
@@ -24,24 +25,32 @@ private:
 	bool jmping = false;
 	bool canJump = false;
 	int frames_since_jmp = 100;
-	// Bomb
-	bool bombing = false;
-	float boom_time = 0.5;
-	float float_time = 0.11;
-	// slide
-	bool sliding = false;
-	float slide_time = 1.;
+	    //Bomb
+    bool bombing = false;
+    float boom_start = 0.5;
+    float boom_time = 1.;
+    float float_time = .8;
+    float a_bomb;
+    float b_bomb;
+    //slide 
+    bool sliding = false;
+    float slide_start = 1.;
+    float slide_time = .6;
+    float slide_dist = 130.;
+    float a_slide;
+    float b_slide;
 
 	// Sprite
 	int spriteW = 32;
 	const int NB_FRAMES = 6;
 	int currentFrame = 0;
 	int currentDirection = 0;
+	int sens = (currentDirection == 1) ? -1 : 1;
 	const float FRAME_DURATION = 0.1;
 	// physics
 	const float HANG_TIME = 36 * FRAME_DURATION;
 	const float VERTICAL = 500.;
-	int sol = 300;
+
 	bool gravity = true;
 	float g;
 	float v0;
@@ -66,10 +75,13 @@ private:
 	float jumpAction(float time);
 	void bombAction(float tb, float time);
 	void slideAction(float ts, float time);
+	float slideEasing(float t);
+    float bombEasing(float t);
 	
 	bool collision();
 	bool collisionDown();
 	bool collisionRight();
 	bool collisionUp();
 	bool collisionLeft();
+	
 };

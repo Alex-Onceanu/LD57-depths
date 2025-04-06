@@ -9,12 +9,6 @@ int main()
     auto window = sf::RenderWindow(sf::VideoMode({RES_X,RES_Y}), "Ludum Dare 57", sf::Style::Titlebar | sf::Style::Close);
     window.setFramerateLimit(60);
     window.setPosition({ 0,0 });
-    sf::View view1;
-    view1.setCenter({RES_X/2.0, RES_Y/2.0});
-    view1.setSize({RES_X,RES_Y});
-    view1.zoom(0.5f);
-    window.setView(view1);
-
  
     std::unique_ptr<World> w = std::make_unique<World>();
 
