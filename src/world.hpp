@@ -13,7 +13,7 @@ constexpr int RES_X = 1024;
 constexpr int RES_Y = 576;
 
 constexpr int NB_TILES_X = 16;
-constexpr int NB_TILES_Y = 9;
+constexpr int NB_TILES_Y = 40;
 
 
 class World 

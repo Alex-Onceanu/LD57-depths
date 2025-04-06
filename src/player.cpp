@@ -80,7 +80,6 @@ void Player::slideAction(float t_s, float time)
 		t = slideEasing(t);
 		float p = a_slide * t + (1 - t) * b_slide;
 		pos.x = p;
-		// std::cout << 'a' << a_slide << ' '<< b_slide << t << std::endl;
 	}
 	if (sliding && t_s >= slide_time)
 	{
@@ -90,15 +89,141 @@ void Player::slideAction(float t_s, float time)
 
 bool Player::collisionLeft()
 {
-	return false;
+	const int tileSize = 32;
+	int closestCenterj = static_cast<int>(pos.x + 20.0 - mapOffset.x) / tileSize;
+	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
+	// std::cout << "i : " << closestCenteri << "j : " << closestCenterj << std::endl;
+	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size())
+	{
+		// std::cout << "pas de collision on est en dehors de la map" << std::endl;
+		return false;
+	}
+	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
+
+	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
+	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
+
+	if (pos.y < closestCenterY)
+	{
+		if (std::abs(closestCenterY - pos.y) < std::abs((closestCenterY - tileSize / 2.0) - pos.y))
+		{
+			return closestTile.getTopLeft() or closestTile.getBotLeft();
+		}
+		else
+		{
+			if ((closestCenteri - 1) < 0)
+			{
+				return closestTile.getTopLeft();
+			}
+			Tile topTile = (*map)[closestCenterj + (closestCenteri - 1) * mapWidth];
+			return closestTile.getTopLeft() or topTile.getBotLeft() or closestTile.getBotLeft();
+		}
+	}
+	else
+	{
+		if (std::abs(closestCenterY - pos.y) < std::abs((closestCenterY + tileSize / 2.0) - pos.y))
+		{
+			return closestTile.getTopLeft() or closestTile.getBotLeft();
+		}
+		else
+		{
+			Tile botTile = (*map)[closestCenterj + (closestCenteri + 1) * mapWidth];
+			return closestTile.getBotLeft() or botTile.getTopLeft();
+		}
+	}
 }
 bool Player::collisionUp()
 {
-	return false;
+	const int tileSize = 32;
+	int closestCenterj = static_cast<int>(pos.x - mapOffset.x) / tileSize;
+	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
+	// std::cout << "i : " << closestCenteri << "j : " << closestCenterj << std::endl;
+	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size())
+	{
+		// std::cout << "pas de collision on est en dehors de la map" << std::endl;
+		return false;
+	}
+	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
+	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
+	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
+
+	if (pos.x > closestCenterX)
+	{
+		if (std::abs(closestCenterX - pos.x) < std::abs((closestCenterX + tileSize / 2.0) - pos.x))
+		{
+			return closestTile.getTopLeft() or closestTile.getTopRight();
+		}
+		else
+		{
+			if ((closestCenterj + 1) >= mapWidth)
+			{
+				return closestTile.getTopRight();
+			}
+			Tile rightTile = (*map)[(closestCenterj + 1) + closestCenteri * mapWidth];
+			return closestTile.getTopRight() or rightTile.getTopLeft();
+		}
+	}
+	else
+	{
+		if (std::abs(closestCenterX - pos.x) < std::abs((closestCenterX - tileSize / 2.0) - pos.x))
+		{
+			return closestTile.getTopLeft() or closestTile.getTopRight();
+		}
+		else
+		{
+			if ((closestCenterj - 1) < 0)
+			{
+				return closestTile.getTopLeft();
+			}
+			Tile rightTile = (*map)[(closestCenterj - 1) + closestCenteri * mapWidth];
+			return closestTile.getTopLeft() or rightTile.getTopRight();
+		}
+	}
 }
 bool Player::collisionRight()
 {
-	return false;
+	const int tileSize = 32;
+	int closestCenterj = static_cast<int>(pos.x + 9.0 - mapOffset.x) / tileSize;
+	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
+	// std::cout << "i : " << closestCenteri << "j : " << closestCenterj << std::endl;
+	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size())
+	{
+		// std::cout << "pas de collision on est en dehors de la map" << std::endl;
+		return false;
+	}
+	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
+
+	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
+	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
+
+	if (pos.y < closestCenterY)
+	{
+		if (std::abs(closestCenterY - pos.y) < std::abs((closestCenterY - tileSize / 2.0) - pos.y))
+		{
+			return closestTile.getTopRight() or closestTile.getBotRight();
+		}
+		else
+		{
+			if ((closestCenteri - 1) < 0)
+			{
+				return closestTile.getTopRight();
+			}
+			Tile topTile = (*map)[closestCenterj + (closestCenteri - 1) * mapWidth];
+			return closestTile.getTopRight() or topTile.getBotRight() or closestTile.getBotRight();
+		}
+	}
+	else
+	{
+		if (std::abs(closestCenterY - pos.y) < std::abs((closestCenterY + tileSize / 2.0) - pos.y))
+		{
+			return closestTile.getTopRight() or closestTile.getBotRight();
+		}
+		else
+		{
+			Tile botTile = (*map)[closestCenterj + (closestCenteri + 1) * mapWidth];
+			return closestTile.getBotRight() or botTile.getTopRight();
+		}
+	}
 }
 
 bool Player::collisionDown()
@@ -113,9 +238,10 @@ bool Player::collisionDown()
 		return false;
 	}
 	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
-	// (*map)[closestCenterj + closestCenteri * mapWidth] = Tile(1, 1, 1, 1);
 	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
 	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
+
+	if(closestTile.getBotLeft() and closestTile.getBotRight()) return true;
 
 	if (pos.x > closestCenterX)
 	{
@@ -151,14 +277,9 @@ bool Player::collisionDown()
 	}
 }
 
-bool Player::collision()
-{
-	return collisionDown();
-}
-
 void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 {
-
+	speedXForStepBuf = 0.0;
 	int jmpPressed = false;
 	int boomPressed = false;
 	int slidePressed = false;
@@ -185,7 +306,7 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 			{
 				slidePressed = true;
 				a_slide = pos.x;
-				std::cout << sens << ' ' << currentDirection << std::endl;
+				// std::cout << sens << ' ' << currentDirection << std::endl;
 				b_slide = a_slide + sens * slide_dist;
 				anythingPressed = true;
 			}
@@ -219,7 +340,7 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 		if (sf::Keyboard::isKeyPressed(keyPerDirection[i]) && (slide_time - t_s < 0.23)) // pour qu'on puisse pas bouger avant quasi la fin du slide.
 		{
 			currentDirection = i;
-			pos.x += 3 * stepPerDirection[i];
+			speedXForStepBuf += 180 * stepPerDirection[i];
 			anythingPressed = true;
 		}
 	}
@@ -233,6 +354,13 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 void Player::process(float dt)
 {
 	sf::Vector2f oldPos = sf::Vector2f({pos.x, pos.y});
+
+	bool cright = collisionRight();
+	bool cleft = collisionLeft();
+	bool cup = collisionUp();
+
+	if (not (speedXForStepBuf > 0.0 and cright) and not (speedXForStepBuf < 0.0 and cleft))
+		pos.x += speedXForStepBuf * dt;
 
 	if (not anythingPressed)
 	{
@@ -254,9 +382,9 @@ void Player::process(float dt)
 	if (jmping || frames_since_jmp <= 20)
 	{
 		decal = 5;
-		// std::cout << "jmping" << std::endl;
 	}
 	sprite->setTextureRect(sf::IntRect({(currentFrame + decal) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));
+
 
 	if (collisionDown())
 	{
@@ -265,10 +393,27 @@ void Player::process(float dt)
 		canJump = true;
 		jmping = false;
 	}
+	else if(cup and pos.y < oldPos.y)
+	{
+		canJump = false;
+		pos.y = oldPos.y;
+	}
 	else
 	{
 		canJump = false;
 	}
+	// if(cright and pos.x > oldPos.x)
+	// {
+	// 	pos.x = oldPos.x;
+	// 	speed.x = 0.0;
+	// }
+	// else if(cleft and pos.x < oldPos.x)
+	// {
+	// 	// std::cout << "LEFT ! " << rand() % 9 << std::endl;
+	// 	pos.x = oldPos.x;
+	// 	speed.x = 0.0;
+	// }
+
 
 	sprite->setPosition(pos);
 }
