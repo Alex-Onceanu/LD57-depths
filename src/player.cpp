@@ -467,7 +467,7 @@ void Player::mineDown()
 
 	const int tileSize = 32;
 	int closestCenterj = static_cast<int>(pos.x - mapOffset.x) / tileSize;
-	int closestCenteri = 1 + static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
+	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
 
 	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size()) return;
 
@@ -629,7 +629,6 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 {
 	speedXForStepBuf = 0.0;
 	jmpPressed = false;
-	int boomPressed = false;
 	int slidePressed = false;
 	anythingPressed = false;
 	sens = (currentDirection == 1) ? -1 : 1;
@@ -649,6 +648,7 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 				anythingPressed = true;
 				a_bomb = pos.y;
 				b_bomb = a_bomb - 15;
+				boom_start = time;
 			}
 			if (keyPressed->scancode == sf::Keyboard::Scancode::RShift)
 			{
@@ -663,9 +663,12 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 				if(currentDirection == 0) mineRight();
 				else mineLeft();
 			}
-			if (keyPressed->scancode == sf::Keyboard::Scancode::X)
+		}
+		if (const auto *keyPressed = event->getIf<sf::Event::KeyReleased>())
+		{
+			if (keyPressed->scancode == sf::Keyboard::Scancode::LShift)
 			{
-				mineDown();
+				boomPressed = false;
 			}
 		}
 	}
@@ -680,8 +683,6 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 	if (boomPressed)
 	{
 		bombing = true;
-
-		boom_start = time;
 	}
 	if (slidePressed)
 	{
@@ -706,7 +707,7 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 	for (int i = 0; i < 2; i++)
 	{
 
-		if (sf::Keyboard::isKeyPressed(keyPerDirection[i]) && (slide_time - t_s < 0.23)) // pour qu'on puisse pas bouger avant quasi la fin du slide.
+		if (sf::Keyboard::isKeyPressed(keyPerDirection[i]) && (slide_time - t_s < 0.23) and not bombing) // pour qu'on puisse pas bouger avant quasi la fin du slide.
 		{
 			currentDirection = i;
 			speedXForStepBuf += 180 * stepPerDirection[i];
@@ -803,6 +804,8 @@ void Player::process(float dt)
 			{
 				bombSprite = true;
 				bombBuffer = 0;
+				mineDown();
+				speed.y = 0.0;
 			}
 			pos.y = oldPos.y;
 			speed.y = 0.0;

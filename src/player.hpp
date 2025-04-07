@@ -40,6 +40,7 @@ private:
     float boom_start = 0.5;
     float boom_time = 10.;
     float float_time = .3;
+	bool boomPressed = false;
     float a_bomb;
     float b_bomb;
     //slide 
