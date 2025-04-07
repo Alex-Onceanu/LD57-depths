@@ -40,7 +40,7 @@ public:
 
 private:
     Wave getMinimalEntropy(Wave& center);
-    void propagate(Wave& start);
+    void propagate(Wave& start,int w,int h);
     void init(int w, int h, std::vector<Tile> initial);
 
 private:

@@ -160,7 +160,7 @@ void Wfc::init(int w, int h, std::vector<Tile> initial)
             if(t.getTopRight() != -1)
             {
                 waves[get(x, y)].collapseToOne(t);
-                propagate(waves[get(x, y)]);
+                propagate(waves[get(x, y)],w,h);
             }
         }
     }
@@ -210,7 +210,7 @@ int Wfc::getHeight()
 }
 
 
-void Wfc::propagate(Wave& start)
+void Wfc::propagate(Wave& start, int w, int h)
 {
     std::vector<bool> visited;
     for(auto& w : waves)
@@ -221,7 +221,15 @@ void Wfc::propagate(Wave& start)
     Wave curr = start;
     visited[get(start.getX(), start.getY())] = true;
     waves[get(start.getX(), start.getY())] = start;
-
+    for(int j = 0; j < w; j++)
+    {
+        visited[j] = true;
+    }
+    for (int i = 1; i < h; i++)
+    {
+        visited[i*w] = true;
+        visited[(i+1)*w-1] = true;
+    }
     std::queue<Wave> todo;
     todo.push(start);
 
@@ -267,7 +275,7 @@ std::vector<Tile> Wfc::collapse(int w, int h, std::vector<Tile> initial)
     while(currentEntropy > 1)
     {
         origin.collapseToOne();
-        propagate(origin);
+        propagate(origin,w,h);
         origin = getMinimalEntropy(origin);
         currentEntropy = origin.getEntropy();
     }

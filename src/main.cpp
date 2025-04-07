@@ -5,6 +5,7 @@
 
 int main()
 {
+    srand(time(NULL));
     auto window = sf::RenderWindow(sf::VideoMode({RES_X,RES_Y}), "Ludum Dare 57", sf::Style::Titlebar | sf::Style::Close);
     window.setFramerateLimit(60);
     window.setPosition({ 0,0 });
