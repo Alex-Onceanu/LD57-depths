@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-#include <ctime>
 #include <memory>
 #include <iostream>
 #include "world.hpp"
@@ -15,7 +14,6 @@ int main()
     sf::Clock clock;
     std::vector<std::optional<sf::Event>> events;
     float timeSinceStart = 0.;
-    srand(time(NULL));
 
     while (window.isOpen())
     {

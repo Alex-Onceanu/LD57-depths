@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <ostream>
 
-Player::Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f __mapOffset, float *_fogHeight, std::vector<sf::Sprite>* __mapSpritesPtr)
+Player::Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f* __mapOffset, float *_fogHeight, std::vector<sf::Sprite>* __mapSpritesPtr)
 	: map(__map),
 	  mapOffset(__mapOffset),
 	  mapWidth(__mapWidth),
@@ -114,8 +114,8 @@ void Player::slideAction(float t_s, float time)
 bool Player::collisionLeft()
 {
 	const int tileSize = 32;
-	int closestCenterj = static_cast<int>(pos.x + 20.0 - mapOffset.x) / tileSize;
-	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
+	int closestCenterj = static_cast<int>(pos.x + 20.0 - mapOffset->x) / tileSize;
+	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset->y) / tileSize;
 
 	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size())
 	{
@@ -123,8 +123,8 @@ bool Player::collisionLeft()
 	}
 	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
 
-	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
-	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
+	float closestCenterX = closestCenterj * tileSize + mapOffset->x;
+	float closestCenterY = closestCenteri * tileSize + mapOffset->y;
 
 	if (pos.y < closestCenterY)
 	{
@@ -158,8 +158,8 @@ bool Player::collisionLeft()
 bool Player::collisionUp()
 {
 	const int tileSize = 32;
-	int closestCenterj = static_cast<int>(pos.x - mapOffset.x) / tileSize;
-	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
+	int closestCenterj = static_cast<int>(pos.x - mapOffset->x) / tileSize;
+	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset->y) / tileSize;
 
 	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size())
 	{
@@ -167,8 +167,8 @@ bool Player::collisionUp()
 		return false;
 	}
 	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
-	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
-	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
+	float closestCenterX = closestCenterj * tileSize + mapOffset->x;
+	float closestCenterY = closestCenteri * tileSize + mapOffset->y;
 
 	if (pos.x > closestCenterX)
 	{
@@ -206,8 +206,8 @@ bool Player::collisionUp()
 bool Player::collisionRight()
 {
 	const int tileSize = 32;
-	int closestCenterj = static_cast<int>(pos.x + 9.0 - mapOffset.x) / tileSize;
-	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
+	int closestCenterj = static_cast<int>(pos.x + 9.0 - mapOffset->x) / tileSize;
+	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset->y) / tileSize;
 
 	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size())
 	{
@@ -216,8 +216,8 @@ bool Player::collisionRight()
 	}
 	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
 
-	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
-	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
+	float closestCenterX = closestCenterj * tileSize + mapOffset->x;
+	float closestCenterY = closestCenteri * tileSize + mapOffset->y;
 
 	if (pos.y < closestCenterY)
 	{
@@ -252,16 +252,16 @@ bool Player::collisionRight()
 bool Player::collisionDown()
 {
 	const int tileSize = 32;
-	int closestCenterj = static_cast<int>(pos.x - mapOffset.x) / tileSize;
-	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
+	int closestCenterj = static_cast<int>(pos.x - mapOffset->x) / tileSize;
+	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset->y) / tileSize;
 
 	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size())
 	{
 		return false;
 	}
 	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
-	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
-	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
+	float closestCenterX = closestCenterj * tileSize + mapOffset->x;
+	float closestCenterY = closestCenteri * tileSize + mapOffset->y;
 
 	if (closestTile.getBotLeft() and closestTile.getBotRight())
 		return true;
@@ -305,16 +305,22 @@ bool Player::fogCollision()
 	return *fogHeight > pos.y;
 }
 
+void Player::setSpriteCyclePtr(int* which)
+{
+	spriteCyclePtr = which;
+}
+
 
 void Player::mineBotLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 {
 	Tile old = (*map)[x + y * mapWidth];
-	if(old.getBotLeft() == 2) return;
+	if(old.getBotLeft() != 1) return;
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), old.getBotRight(), 0, old.getTopLeft());
 	
-	sf::Sprite spr = (*mapSpritesPtr)[y * mapWidth + x];
+	int indexSprite = (*spriteCyclePtr + y * mapWidth + x) % mapSpritesPtr->size();
+	sf::Sprite spr = (*mapSpritesPtr)[indexSprite];
 	spr.setTextureRect((*map)[y * mapWidth + x].getRect());
-	(*mapSpritesPtr)[y * mapWidth + x] = spr;
+	(*mapSpritesPtr)[indexSprite] = spr;
 
 	imposedPtr->push_back({ x - 1,y });
 	imposedPtr->push_back({ x,y + 1 });
@@ -324,12 +330,13 @@ void Player::mineBotLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 void Player::mineBotLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY)
 {
 	Tile old = (*map)[x + y * mapWidth];
-	if(old.getBotLeft() == 2) return;
+	if(old.getBotLeft() != 1) return;
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), old.getBotRight(), 0, old.getTopLeft());
 	
-	sf::Sprite spr = (*mapSpritesPtr)[y * mapWidth + x];
+	int indexSprite = (*spriteCyclePtr + y * mapWidth + x) % mapSpritesPtr->size();
+	sf::Sprite spr = (*mapSpritesPtr)[indexSprite];
 	spr.setTextureRect((*map)[y * mapWidth + x].getRect());
-	(*mapSpritesPtr)[y * mapWidth + x] = spr;
+	(*mapSpritesPtr)[indexSprite] = spr;
 
 	if(x - 1 != otherX and y != otherY) imposedPtr->push_back({ x - 1,y });
 	if(x != otherX and y + 1 != otherY) imposedPtr->push_back({ x,y + 1 });
@@ -339,12 +346,13 @@ void Player::mineBotLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr, in
 void Player::mineBotRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 {
 	Tile old = (*map)[x + y * mapWidth];
-	if(old.getBotRight() == 2) return;
+	if(old.getBotRight() != 1) return;
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), 0, old.getBotLeft(), old.getTopLeft());
 	
-	sf::Sprite spr = (*mapSpritesPtr)[y * mapWidth + x];
+	int indexSprite = (*spriteCyclePtr + y * mapWidth + x) % mapSpritesPtr->size();
+	sf::Sprite spr = (*mapSpritesPtr)[indexSprite];
 	spr.setTextureRect((*map)[y * mapWidth + x].getRect());
-	(*mapSpritesPtr)[y * mapWidth + x] = spr;
+	(*mapSpritesPtr)[indexSprite] = spr;
 
 	imposedPtr->push_back({ x + 1,y });
 	imposedPtr->push_back({ x,y + 1 });
@@ -354,12 +362,13 @@ void Player::mineBotRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 void Player::mineBotRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY)
 {
 	Tile old = (*map)[x + y * mapWidth];
-	if(old.getBotRight() == 2) return;
+	if(old.getBotRight() != 1) return;
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), 0, old.getBotLeft(), old.getTopLeft());
 	
-	sf::Sprite spr = (*mapSpritesPtr)[y * mapWidth + x];
+	int indexSprite = (*spriteCyclePtr + y * mapWidth + x) % mapSpritesPtr->size();
+	sf::Sprite spr = (*mapSpritesPtr)[indexSprite];
 	spr.setTextureRect((*map)[y * mapWidth + x].getRect());
-	(*mapSpritesPtr)[y * mapWidth + x] = spr;
+	(*mapSpritesPtr)[indexSprite] = spr;
 
 	if(x + 1 != otherX and y != otherY) imposedPtr->push_back({ x + 1,y });
 	if(x != otherX and y + 1 != otherY) imposedPtr->push_back({ x,y + 1 });
@@ -369,12 +378,13 @@ void Player::mineBotRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr, i
 void Player::mineTopLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 {
 	Tile old = (*map)[x + y * mapWidth];
-	if(old.getTopLeft() == 2) return;
+	if(old.getTopLeft() != 1) return;
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), old.getBotRight(), old.getBotLeft(), 0);
 	
-	sf::Sprite spr = (*mapSpritesPtr)[y * mapWidth + x];
+	int indexSprite = (*spriteCyclePtr + y * mapWidth + x) % mapSpritesPtr->size();
+	sf::Sprite spr = (*mapSpritesPtr)[indexSprite];
 	spr.setTextureRect((*map)[y * mapWidth + x].getRect());
-	(*mapSpritesPtr)[y * mapWidth + x] = spr;
+	(*mapSpritesPtr)[indexSprite] = spr;
 
 	imposedPtr->push_back({ x - 1,y });
 	imposedPtr->push_back({ x,y - 1 });
@@ -384,12 +394,13 @@ void Player::mineTopLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 void Player::mineTopLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY)
 {
 	Tile old = (*map)[x + y * mapWidth];
-	if(old.getTopLeft() == 2) return;
+	if(old.getTopLeft() != 1) return;
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), old.getBotRight(), old.getBotLeft(), 0);
 	
-	sf::Sprite spr = (*mapSpritesPtr)[y * mapWidth + x];
+	int indexSprite = (*spriteCyclePtr + y * mapWidth + x) % mapSpritesPtr->size();
+	sf::Sprite spr = (*mapSpritesPtr)[indexSprite];
 	spr.setTextureRect((*map)[y * mapWidth + x].getRect());
-	(*mapSpritesPtr)[y * mapWidth + x] = spr;
+	(*mapSpritesPtr)[indexSprite] = spr;
 
 	if(x - 1 != otherX and y != otherY) imposedPtr->push_back({ x - 1,y });
 	if(x != otherX and y - 1 != otherY) imposedPtr->push_back({ x,y - 1 });
@@ -399,12 +410,13 @@ void Player::mineTopLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr, in
 void Player::mineTopRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 {
 	Tile old = (*map)[x + y * mapWidth];
-	if(old.getTopRight() == 2) return;
+	if(old.getTopRight() != 1) return;
 	(*map)[x + y * mapWidth] = Tile(0, old.getBotRight(), old.getBotLeft(), old.getTopLeft());
 	
-	sf::Sprite spr = (*mapSpritesPtr)[y * mapWidth + x];
+	int indexSprite = (*spriteCyclePtr + y * mapWidth + x) % mapSpritesPtr->size();
+	sf::Sprite spr = (*mapSpritesPtr)[indexSprite];
 	spr.setTextureRect((*map)[y * mapWidth + x].getRect());
-	(*mapSpritesPtr)[y * mapWidth + x] = spr;
+	(*mapSpritesPtr)[indexSprite] = spr;
 	
 	imposedPtr->push_back({ x - 1,y });
 	imposedPtr->push_back({ x,y - 1 });
@@ -414,12 +426,13 @@ void Player::mineTopRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 void Player::mineTopRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY)
 {
 	Tile old = (*map)[x + y * mapWidth];
-	if(old.getTopRight() == 2) return;
+	if(old.getTopRight() != 1) return;
 	(*map)[x + y * mapWidth] = Tile(0, old.getBotRight(), old.getBotLeft(), old.getTopLeft());
 	
-	sf::Sprite spr = (*mapSpritesPtr)[y * mapWidth + x];
+	int indexSprite = (*spriteCyclePtr + y * mapWidth + x) % mapSpritesPtr->size();
+	sf::Sprite spr = (*mapSpritesPtr)[indexSprite];
 	spr.setTextureRect((*map)[y * mapWidth + x].getRect());
-	(*mapSpritesPtr)[y * mapWidth + x] = spr;
+	(*mapSpritesPtr)[indexSprite] = spr;
 	
 	if(x + 1 != otherX and y != otherY) imposedPtr->push_back({ x + 1,y });
 	if(x != otherX and y - 1 != otherY) imposedPtr->push_back({ x,y - 1 });
@@ -455,9 +468,12 @@ void Player::updateMapAfterMining(std::vector<sf::Vector2i> imposed)
 
 		(*map)[v.y * mapWidth + v.x].set(topRight, botRight, botLeft, topLeft);
 
-		sf::Sprite spr = (*mapSpritesPtr)[v.y * mapWidth + v.x];
-		spr.setTextureRect((*map)[v.y * mapWidth + v.x].getRect());
-		(*mapSpritesPtr)[v.y * mapWidth + v.x] = spr;
+		int spriteIndex = (*spriteCyclePtr + v.y * mapWidth + v.x) % mapSpritesPtr->size();
+
+		Tile t = (*map)[v.y * mapWidth + v.x];
+		sf::Sprite spr = (*mapSpritesPtr)[spriteIndex];
+		spr.setTextureRect(t.getRect());
+		(*mapSpritesPtr)[spriteIndex] = spr;
 	}
 }
 
@@ -466,16 +482,16 @@ void Player::mineDown()
 	std::vector<sf::Vector2i> imposed;
 
 	const int tileSize = 32;
-	int closestCenterj = static_cast<int>(pos.x - mapOffset.x) / tileSize;
-	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
+	int closestCenterj = static_cast<int>(pos.x - mapOffset->x) / tileSize;
+	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset->y) / tileSize;
 
 	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size()) return;
 
 	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
 	// if(closestTile.getTopRight() == 0 and closestTile.getBotRight() == 0 and closestTile.getTopLeft() == 0 and closestTile.getBotLeft() == 0) return;
 
-	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
-	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
+	float closestCenterX = closestCenterj * tileSize + mapOffset->x;
+	float closestCenterY = closestCenteri * tileSize + mapOffset->y;
 
 	if (pos.x > closestCenterX)
 	{
@@ -526,16 +542,16 @@ void Player::mineRight()
 	std::vector<sf::Vector2i> imposed;
 
 	const int tileSize = 32;
-	int closestCenterj = static_cast<int>(pos.x + 25.0 - mapOffset.x) / tileSize;
-	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
+	int closestCenterj = static_cast<int>(pos.x + 25.0 - mapOffset->x) / tileSize;
+	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset->y) / tileSize;
 
 	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size()) return;
 
 	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
 	if(closestTile.getTopRight() == 0 and closestTile.getBotRight() == 0 and closestTile.getTopLeft() == 0 and closestTile.getBotLeft() == 0) return;
 
-	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
-	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
+	float closestCenterX = closestCenterj * tileSize + mapOffset->x;
+	float closestCenterY = closestCenteri * tileSize + mapOffset->y;
 
 	if (pos.y < closestCenterY)
 	{
@@ -579,16 +595,16 @@ void Player::mineLeft()
 	std::vector<sf::Vector2i> imposed;
 
 	const int tileSize = 32;
-	int closestCenterj = static_cast<int>(pos.x + 15.0 - mapOffset.x) / tileSize;
-	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
+	int closestCenterj = static_cast<int>(pos.x + 15.0 - mapOffset->x) / tileSize;
+	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset->y) / tileSize;
 
 	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size()) return;
 	
 	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
 	if(closestTile.getTopRight() == 0 and closestTile.getBotRight() == 0 and closestTile.getTopLeft() == 0 and closestTile.getBotLeft() == 0) return;
 
-	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
-	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
+	float closestCenterX = closestCenterj * tileSize + mapOffset->x;
+	float closestCenterY = closestCenteri * tileSize + mapOffset->y;
 
 	if (pos.y < closestCenterY)
 	{

@@ -130,7 +130,7 @@ int Wave::dist(Wave& other)
 Wfc::Wfc(int __nbMateriaux)
     : nbMateriaux(__nbMateriaux)
 {
-
+    std::srand(std::time(nullptr));
 }
 
 Wave::~Wave()
@@ -144,11 +144,6 @@ void Wfc::init(int w, int h, std::vector<Tile> initial)
     width = w;
     height = h;
 
-    // waves.clear();
-
-    // waves.reserve(w * h);
-    // std::cout << "waves size en init " << waves.size() << std::endl;
-
     for(int y = 0; y < h; y++)
     {
         for(int x = 0; x < w; x++)
@@ -156,8 +151,6 @@ void Wfc::init(int w, int h, std::vector<Tile> initial)
             waves.push_back(Wave(x, y, nbMateriaux));
         }
     }
-
-    // std::cout << "premiere boucle fniiie" << std::endl;
 
     for(int y = 0; y < h; y++)
     {
@@ -266,7 +259,10 @@ std::vector<Tile> Wfc::collapse(int w, int h, std::vector<Tile> initial)
 {
     init(w, h, initial);
 
-    Wave origin = getMinimalEntropy(waves[get(rand() % w, rand() % h)]);
+    std::rand();
+    int seed = get(std::rand() % w, std::rand() % h);
+
+    Wave origin = getMinimalEntropy(waves[seed]);
     int currentEntropy = origin.getEntropy();
     while(currentEntropy > 1)
     {

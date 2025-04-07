@@ -1,27 +1,30 @@
 #pragma once
 #include "entity.hpp"
 #include "tile.hpp"
-#include "wfc.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Vector2.hpp>
 
+
 class Player : public Entity
 {
 public:
-	Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f __mapOffset, float* _fogHeight, std::vector<sf::Sprite>* __mapSpritesPtr);
+	Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f* __mapOffset, float* _fogHeight, std::vector<sf::Sprite>* __mapSpritesPtr);
 	~Player();
+
 	void input(std::vector<std::optional<sf::Event>> events, float time);
 	void process(float dt);
 	void draw(sf::RenderWindow &window);
 	sf::Vector2f* getPosPtr();
+
+  	void setSpriteCyclePtr(int* which);
 
 private:
 	std::vector<Tile>* map;
 	std::vector<sf::Sprite>* mapSpritesPtr;
 	int mapWidth;
 
-	sf::Vector2f mapOffset;
+	sf::Vector2f* mapOffset;
   bool isDead = false;
 	// actions
 	// Jump
@@ -84,6 +87,7 @@ private:
 	float t0 = myClock.restart().asSeconds();
 	float time_boom;
 	float time_slide;
+	int* spriteCyclePtr = nullptr;
 
 	// fonctions
 	bool blocked(sf::Vector2f pos);

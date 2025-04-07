@@ -8,17 +8,17 @@
 #include "camera.hpp"
 #include "fog.hpp"
 #include "wfc.hpp"
+#include "chunkgenerator.hpp"
 
 World::World()
 {
-    Wfc generator = Wfc(2);
+    auto generator = std::make_unique<Wfc>(2);
     
     std::vector<Tile> initial = Wfc::emptyTileset(NB_TILES_X, NB_TILES_Y);
     for(int j = 0; j < NB_TILES_X; j++)
     {
         initial[j] = Tile(0, 0, 0, 0);
     }
-    initial[3 + NB_TILES_X] = Tile(0, 1, 1, 0);
     // for(int i = 0; i < NB_TILES_Y; i++)
     // {
     //     for(int j = 0; j < NB_TILES_X; j++)
@@ -27,9 +27,10 @@ World::World()
     //         initial[j + i * NB_TILES_X] = Tile(0, 0, 0, 0);
     //     }
     // }
-    map = generator.collapse(NB_TILES_X, NB_TILES_Y, initial);
-
+    map = generator->collapse(NB_TILES_X, NB_TILES_Y, initial);
+    assert(map.size() == NB_TILES_X * NB_TILES_Y);
     mapTexs = new sf::Texture[map.size()];
+
     int i = 0;
     for(auto& t : map)
     {
@@ -47,17 +48,23 @@ World::World()
         i++;
     }
     auto f = std::make_unique<Fog>();
-    std::unique_ptr<Player> j = std::make_unique<Player>(&map, NB_TILES_X, sf::Vector2f({16 + RES_X / 2 - NB_TILES_X * 16, RES_Y / 2}), f->getHeight(), &mapSprites);
+    mapOffset = sf::Vector2f({16 + RES_X / 2 - NB_TILES_X * 16, RES_Y / 2});
+    std::unique_ptr<Player> j = std::make_unique<Player>(&map, NB_TILES_X, &mapOffset, f->getHeight(), &mapSprites);
     auto c = std::make_unique<Camera>(j->getPosPtr());
+    auto g = std::make_unique<ChunkGenerator>(j->getPosPtr(), &mapOffset, &map, &mapSprites, std::move(generator));
+    j->setSpriteCyclePtr(g->getSpriteCyclePtr());
+    
     entities.push_back(std::move(j));
     entities.push_back(std::move(c));
     entities.push_back(std::move(f));
+    entities.push_back(std::move(g));
 }
 
 World::~World()
 {
     
 }
+
 
 void World::input(std::vector<std::optional<sf::Event>> events, float time)
 {

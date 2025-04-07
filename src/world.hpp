@@ -12,8 +12,6 @@
 constexpr int RES_X = 1024;
 constexpr int RES_Y = 576;
 
-constexpr int NB_TILES_X = 16;
-constexpr int NB_TILES_Y = 40;
 
 
 class World 
@@ -31,4 +29,5 @@ private:
     std::vector<Tile> map;
     std::vector<sf::Sprite> mapSprites;
     sf::Texture* mapTexs;
+    sf::Vector2f mapOffset;
 };
