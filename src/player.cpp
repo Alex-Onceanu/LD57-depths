@@ -405,7 +405,6 @@ void Player::mineTopRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr, i
 void Player::updateMapAfterMining(std::vector<sf::Vector2i> imposed)
 {
 	if(imposed.size() <= 0) return;
-	std::unique(imposed.begin(), imposed.end());
 
 	for(sf::Vector2i& v : imposed)
 	{
@@ -503,7 +502,7 @@ void Player::mineRight()
 	std::vector<sf::Vector2i> imposed;
 
 	const int tileSize = 32;
-	int closestCenterj = static_cast<int>(pos.x + 9.0 - mapOffset.x) / tileSize;
+	int closestCenterj = static_cast<int>(pos.x + 25.0 - mapOffset.x) / tileSize;
 	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
 
 	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size()) return;
