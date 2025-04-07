@@ -18,11 +18,14 @@ class World
 {
 public:
     World();
-    ~World();
+    ~World(){};
 
     void input(std::vector<std::optional<sf::Event>> events,float time);
     void process(float dt);
     void draw(sf::RenderWindow& window);
+
+private:
+    int initPath(std::vector<Tile>* initial);
 
 private:
     std::vector<std::unique_ptr<Entity>> entities;

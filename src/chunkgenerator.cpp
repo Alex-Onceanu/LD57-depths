@@ -1,12 +1,14 @@
 #include <iostream>
+#include <cassert>
 
 #include "chunkgenerator.hpp"
 
-ChunkGenerator::ChunkGenerator(sf::Vector2f* __playerPos, sf::Vector2f* __mapOffset, std::vector<Tile>* __map, std::vector<sf::Sprite>* __mapSprites, std::unique_ptr<Wfc> __wfcInstance)
+ChunkGenerator::ChunkGenerator(sf::Vector2f* __playerPos, sf::Vector2f* __mapOffset, std::vector<Tile>* __map, std::vector<sf::Sprite>* __mapSprites, std::unique_ptr<Wfc> __wfcInstance, int __pathX)
     : playerPos(__playerPos),
     mapOffset(__mapOffset),
     map(__map),
-    mapSprites(__mapSprites)
+    mapSprites(__mapSprites),
+    pathX(__pathX)
 {
     wfcInstance = std::move(__wfcInstance);
 }
@@ -27,6 +29,7 @@ void ChunkGenerator::generateChunk()
     {
         initial[i] = (*map)[i + map->size() - NB_TILES_X];
     }
+    continuePath(&initial);
     std::vector<Tile> chunk = wfcInstance->collapse(NB_TILES_X, DEPTH + 1, initial);
 
     for(int i = 0; i < NB_TILES_X * DEPTH; i++)
@@ -47,6 +50,34 @@ int* ChunkGenerator::getSpriteCyclePtr()
 {
     return &spriteCycle;
 }
+
+void ChunkGenerator::continuePath(std::vector<Tile>* initial)
+{
+    int depth = 3;
+    int k;
+    int k_prec = -1;
+    int full = std::rand()%2;
+
+    while(depth<DEPTH){
+        k = std::rand()%3;
+        if ((k == 0 and pathX == NB_TILES_X-2) or (k == 2 and pathX == 1) or (k == 2-k_prec)){
+            k = 1;
+        }
+        if (k == 1){
+            depth++;
+        } else if(k == 0){
+            pathX++;
+        } else {
+            pathX--;
+        }
+
+        pathX = std::max(pathX, 4);
+        pathX = std::min(pathX, NB_TILES_X - 5);
+        (*initial)[pathX+depth*NB_TILES_X].set(1,1,1,1);
+        k_prec = k;
+    }
+}
+
 
 void ChunkGenerator::process(float dt)
 {
