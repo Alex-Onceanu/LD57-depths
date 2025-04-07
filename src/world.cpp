@@ -11,8 +11,6 @@
 
 World::World()
 {
-    std::cout << "Mon buffle, je m'apprête à wfc-er." << std::endl;
-
     Wfc generator = Wfc(2);
     
     std::vector<Tile> initial = Wfc::emptyTileset(NB_TILES_X, NB_TILES_Y);
@@ -31,10 +29,7 @@ World::World()
     // }
     map = generator.collapse(NB_TILES_X, NB_TILES_Y, initial);
 
-    std::cout << "Mon buffle, j'ai fini de wfc-er." << std::endl;
-
     mapTexs = new sf::Texture[map.size()];
-    std::cout << "taille de map : " << map.size() << std::endl;
     int i = 0;
     for(auto& t : map)
     {
@@ -52,12 +47,11 @@ World::World()
         i++;
     }
     auto f = std::make_unique<Fog>();
-    std::unique_ptr<Player> j = std::make_unique<Player>(&map, NB_TILES_X, sf::Vector2f({16 + RES_X / 2 - NB_TILES_X * 16, RES_Y / 2}), f->getHeight());
+    std::unique_ptr<Player> j = std::make_unique<Player>(&map, NB_TILES_X, sf::Vector2f({16 + RES_X / 2 - NB_TILES_X * 16, RES_Y / 2}), f->getHeight(), &mapSprites);
     auto c = std::make_unique<Camera>(j->getPosPtr());
     entities.push_back(std::move(j));
     entities.push_back(std::move(c));
     entities.push_back(std::move(f));
-
 }
 
 World::~World()

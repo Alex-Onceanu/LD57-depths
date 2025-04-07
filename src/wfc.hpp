@@ -8,6 +8,7 @@ class Wave
 {
 public:
     Wave(int x, int y, int nbMaterials);
+    ~Wave();
 
     void collapseToOne();
     void collapseToOne(Tile choice);
@@ -43,7 +44,8 @@ private:
     void init(int w, int h, std::vector<Tile> initial);
 
 private:
-    std::vector<Wave> waves;
-    int width, height;
+    int width = 0;
+    int height = 0;
     int nbMateriaux;
+    std::vector<Wave> waves;
 };

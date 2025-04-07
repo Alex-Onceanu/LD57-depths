@@ -133,14 +133,21 @@ Wfc::Wfc(int __nbMateriaux)
 
 }
 
+Wave::~Wave()
+{
+
+}
+
 void Wfc::init(int w, int h, std::vector<Tile> initial)
 {
     assert(initial.size() == w * h);
-
     width = w;
     height = h;
 
-    waves.clear();
+    // waves.clear();
+
+    // waves.reserve(w * h);
+    // std::cout << "waves size en init " << waves.size() << std::endl;
 
     for(int y = 0; y < h; y++)
     {
@@ -149,6 +156,8 @@ void Wfc::init(int w, int h, std::vector<Tile> initial)
             waves.push_back(Wave(x, y, nbMateriaux));
         }
     }
+
+    // std::cout << "premiere boucle fniiie" << std::endl;
 
     for(int y = 0; y < h; y++)
     {
@@ -272,6 +281,8 @@ std::vector<Tile> Wfc::collapse(int w, int h, std::vector<Tile> initial)
     {
         res.push_back(w.getFirstTile());
     }
+    waves.clear();
+
     return res;
 }
 

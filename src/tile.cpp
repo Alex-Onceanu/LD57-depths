@@ -38,6 +38,14 @@ int Tile::getTopLeft()
     return topLeft;
 }
 
+void Tile::set(int topR, int botR, int botL, int topL)
+{
+    topRight = topR;
+    botRight = botR;
+    botLeft = botL;
+    topLeft = topL;
+}
+
 sf::IntRect Tile::getRect()
 {
     const int tileSize = 32;
