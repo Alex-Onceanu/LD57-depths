@@ -15,7 +15,7 @@ Player::Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f __mapOffse
 	  mapWidth(__mapWidth)
 {
 	texture = sf::Texture("assets/combined_image.png");
-
+	fogHeight = _fogHeight;
 	sprite = new sf::Sprite(texture);
 	sprite->setOrigin({16.0, 16.0});
 	sprite->setTextureRect(sf::IntRect({0, 0}, {32, 32}));
@@ -37,21 +37,22 @@ float Player::slideEasing(float t)
 }
 float Player::bombEasing(float t)
 {
-	return slideEasing(t)*slideEasing(t);
+	return slideEasing(t) * slideEasing(t);
 }
-void Player::jumpAction(float t_j,float time)
+void Player::jumpAction(float t_j, float time)
 {
-  if(t_j<jump_buffer){
-  jmping = true;
-  }
-  if(t_j>jump_buffer && !hasJumped)
-  {
-	speed.y = v0;
-  hasJumped = true;
-	// std::cout << "speedy is" << speed.y << std::endl;
-  buffer = 0;
-	gravity = true;
-  }
+	if (t_j < jump_buffer)
+	{
+		jmping = true;
+	}
+	if (t_j > jump_buffer && !hasJumped)
+	{
+		speed.y = v0;
+		hasJumped = true;
+		// std::cout << "speedy is" << speed.y << std::endl;
+		buffer = 0;
+		gravity = true;
+	}
 }
 
 void Player::bombAction(float t_b, float time)
@@ -62,18 +63,18 @@ void Player::bombAction(float t_b, float time)
 		t = slideEasing(t);
 		float p = a_bomb * t + (1 - t) * b_bomb;
 		pos.y = p;
-    gravity = false;
+		gravity = false;
 	}
-  if(bombing && t_b >= float_time)
-  {
-    speed.y = -3*v0; 
-    gravity = true;
-  }
+	if (bombing && t_b >= float_time)
+	{
+		speed.y = -3 * v0;
+		gravity = true;
+	}
 	if (bombing && t_b >= boom_time)
-	 {
-	 	bombing = false;
-    gravity = true;
-	 }
+	{
+		bombing = false;
+		gravity = true;
+	}
 }
 
 sf::Vector2f *Player::getPosPtr()
@@ -92,12 +93,14 @@ void Player::slideAction(float t_s, float time)
 		float t = (time - slide_start) / slide_time;
 		t = slideEasing(t);
 		float p = a_slide * t + (1 - t) * b_slide;
-    if(!collisionLeft() && !collisionRight()){
-      pos.x = p;
-    }
-    else{
-		  pos.x = p;
-    }
+		if (!collisionLeft() && !collisionRight())
+		{
+			pos.x = p;
+		}
+		else
+		{
+			pos.x = p;
+		}
 		// std::cout << 'a' << a_slide << ' '<< b_slide << t << std::endl;
 	}
 	if (sliding && t_s >= slide_time)
@@ -339,11 +342,11 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 	}
 	// JUMP
 	if (jmpPressed && canJump)
-  {
-    jmping = true;
-    hasJumped = false;
-    jump_time = time;
-  } 
+	{
+		jmping = true;
+		hasJumped = false;
+		jump_time = time;
+	}
 	// BOOM
 	if (boomPressed)
 	{
@@ -357,20 +360,20 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 		slide_start = time;
 	}
 	// Bomb action
-  float t_b = myClock.getElapsedTime().asSeconds() - boom_start;
+	float t_b = myClock.getElapsedTime().asSeconds() - boom_start;
 	bombAction(t_b, time);
-  //Jump action
-  float t_j = myClock.getElapsedTime().asSeconds() - jump_time;
-  jumpAction(t_j,time);
+	// Jump action
+	float t_j = myClock.getElapsedTime().asSeconds() - jump_time;
+	jumpAction(t_j, time);
 	// Slide action
 	float t_s = myClock.getElapsedTime().asSeconds() - slide_start;
 	slideAction(t_s, time);
 	// Left and Right
-  if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R))
-  {
-    pos.x = 553.0;
-    pos.y = 100.0;
-  }
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R))
+	{
+		pos.x = 553.0;
+		pos.y = 100.0;
+	}
 	for (int i = 0; i < 2; i++)
 	{
 
@@ -386,44 +389,47 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 		speed.x = 0;
 	}
 }
-void Player::loadTexture(){
-  int decal = 0;
-  int bombFrames = 15;
-  if(!anythingPressed){
-    /*float y = (sens == 1) ? (0.) :(32.);*/
-    sprite->setTextureRect(sf::IntRect({0, currentDirection * spriteW}, {spriteW, spriteW})); 
-  }
-  bool spritejmp = jmping and buffer<10;
-  bool spriteslide = sliding;
-  bool spritebomb = bombSprite || bombBuffer < bombFrames;
+void Player::loadTexture()
+{
+	int decal = 0;
+	int bombFrames = 15;
+	if (!anythingPressed)
+	{
+		/*float y = (sens == 1) ? (0.) :(32.);*/
+		sprite->setTextureRect(sf::IntRect({0, currentDirection * spriteW}, {spriteW, spriteW}));
+	}
+	bool spritejmp = jmping and buffer < 10;
+	bool spriteslide = sliding;
+	bool spritebomb = bombSprite || bombBuffer < bombFrames;
 	if (spritejmp || spriteslide || spritebomb)
 	{
-    spritejmp = jmping and buffer<10;
-    spriteslide = sliding;
-    spritebomb = bombSprite || bombBuffer <bombFrames;
-    if(spritejmp){
-    buffer++;
-		decal = buffer/2;
-    std::cout << "decal =" << decal << std::endl;
-  	sprite->setTextureRect(sf::IntRect({(5 + decal) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));  
-		std::cout << "j" << std::endl;
-    }
-    if(spriteslide)
-    {
-      sprite->setTextureRect(sf::IntRect({(15) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));  
-    }
-    if(bombSprite || bombBuffer < bombFrames)
-    {
-      std::cout <<"bopmb" <<std::endl;
-      bombSprite = false;
-      bombBuffer++;
-      sprite->setTextureRect(sf::IntRect({(15) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));
-    }
+		spritejmp = jmping and buffer < 10;
+		spriteslide = sliding;
+		spritebomb = bombSprite || bombBuffer < bombFrames;
+		if (spritejmp)
+		{
+			buffer++;
+			decal = buffer / 2;
+			std::cout << "decal =" << decal << std::endl;
+			sprite->setTextureRect(sf::IntRect({(5 + decal) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));
+			std::cout << "j" << std::endl;
+		}
+		if (spriteslide)
+		{
+			sprite->setTextureRect(sf::IntRect({(15) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));
+		}
+		if (bombSprite || bombBuffer < bombFrames)
+		{
+			std::cout << "bopmb" << std::endl;
+			bombSprite = false;
+			bombBuffer++;
+			sprite->setTextureRect(sf::IntRect({(15) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));
+		}
 	}
-  else{
-	sprite->setTextureRect(sf::IntRect({(currentFrame + decal) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));
-  }
-
+	else
+	{
+		sprite->setTextureRect(sf::IntRect({(currentFrame + decal) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));
+	}
 }
 void Player::process(float dt)
 {
@@ -462,25 +468,26 @@ void Player::process(float dt)
 		timeSinceLastAnim += dt;
 		pos += speed * dt;
 		int decal = 0;
-		if (jmping || frames_since_jmp <= 20)
-		{
-			decal = 5;
-			// std::cout << "jmping" << std::endl;
-		}
-		sprite->setTextureRect(sf::IntRect({(currentFrame + decal) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));
 
 		if (collisionDown())
 		{
+			if (bombing)
+			{
+				bombSprite = true;
+				bombBuffer = 0;
+			}
 			pos.y = oldPos.y;
 			speed.y = 0.0;
 			canJump = true;
 			jmping = false;
+			buffer = 0;
+			bombing = false;
 		}
 		else
 		{
 			canJump = false;
 		}
-
+		loadTexture();
 		sprite->setPosition(pos);
 	}
 }
