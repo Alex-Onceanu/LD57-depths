@@ -124,5 +124,6 @@ private:
 	//fog
     float* fogHeight;
     bool fogCollision();
-	sf::Sound dirt_taptap;
+	sf::SoundBuffer dtt;
+	sf::Sound* dirt_taptap;
 };

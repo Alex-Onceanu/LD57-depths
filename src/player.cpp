@@ -24,8 +24,8 @@ Player::Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f* __mapOffs
 	sprite->setTextureRect(sf::IntRect({0, 0}, {32, 32}));
 	g = 2 * VERTICAL / (HANG_TIME * HANG_TIME);
 	v0 = -2 * VERTICAL / HANG_TIME;
-	sf::SoundBuffer dtt("assets/dirt-taptap.mp3");
-	dirt_taptap = sf::Sound(dtt);
+	dtt = sf::SoundBuffer("assets/dirt-taptap.mp3");
+	dirt_taptap = new sf::Sound(dtt);
 }
 
 Player::~Player()
@@ -731,7 +731,7 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 			currentDirection = i;
 			speedXForStepBuf += 180 * stepPerDirection[i];
 			anythingPressed = true;
-			dirt_taptap.play();
+			dirt_taptap->play();
 		}
 	}
 	if (!anythingPressed)
