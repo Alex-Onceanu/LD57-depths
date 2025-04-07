@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <memory>
 #include <iostream>
 #include "world.hpp"
@@ -15,6 +16,11 @@ int main()
     sf::Clock clock;
     std::vector<std::optional<sf::Event>> events;
     float timeSinceStart = 0.;
+    sf::Music music();
+    music.loadFromFile("assets/GOLEM.ogg");
+    music.setLoop(true);
+    music.setVolume(50);
+    music.play();
 
     while (window.isOpen())
     {
