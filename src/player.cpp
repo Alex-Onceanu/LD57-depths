@@ -9,10 +9,11 @@
 #include <algorithm>
 #include <ostream>
 
-Player::Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f __mapOffset, float *_fogHeight, std::vector<sf::Sprite>* mapSpritesPtr)
+Player::Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f __mapOffset, float *_fogHeight, std::vector<sf::Sprite>* __mapSpritesPtr)
 	: map(__map),
 	  mapOffset(__mapOffset),
-	  mapWidth(__mapWidth)
+	  mapWidth(__mapWidth),
+	  mapSpritesPtr(__mapSpritesPtr)
 {
 	texture = sf::Texture("assets/miner_grid.png");
 	fogHeight = _fogHeight;
@@ -38,7 +39,6 @@ float Player::slideEasing(float t)
 float Player::jumpAction(float time)
 {
 	speed.y = v0;
-	// std::cout << "speedy is" << speed.y << std::endl;
 	jmping = true;
 	gravity = true;
 	frames_since_jmp = 0;
@@ -56,7 +56,6 @@ void Player::bombAction(float t_b, float time)
 		t = bombEasing(t);
 		float p = a_slide * t + (1 - t) * b_slide;
 		pos.y = p;
-		/*std::cout << 'a' << a_slide << ' '<< b_slide << t << std::endl;*/
 	}
 	// if (sliding && t_b >= slide_time)
 	// {
@@ -93,10 +92,9 @@ bool Player::collisionLeft()
 	const int tileSize = 32;
 	int closestCenterj = static_cast<int>(pos.x + 20.0 - mapOffset.x) / tileSize;
 	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
-	// std::cout << "i : " << closestCenteri << "j : " << closestCenterj << std::endl;
+
 	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size())
 	{
-		// std::cout << "pas de collision on est en dehors de la map" << std::endl;
 		return false;
 	}
 	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
@@ -138,10 +136,10 @@ bool Player::collisionUp()
 	const int tileSize = 32;
 	int closestCenterj = static_cast<int>(pos.x - mapOffset.x) / tileSize;
 	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
-	// std::cout << "i : " << closestCenteri << "j : " << closestCenterj << std::endl;
+
 	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size())
 	{
-		// std::cout << "pas de collision on est en dehors de la map" << std::endl;
+
 		return false;
 	}
 	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
@@ -186,10 +184,10 @@ bool Player::collisionRight()
 	const int tileSize = 32;
 	int closestCenterj = static_cast<int>(pos.x + 9.0 - mapOffset.x) / tileSize;
 	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
-	// std::cout << "i : " << closestCenteri << "j : " << closestCenterj << std::endl;
+
 	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size())
 	{
-		// std::cout << "pas de collision on est en dehors de la map" << std::endl;
+
 		return false;
 	}
 	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
@@ -232,10 +230,9 @@ bool Player::collisionDown()
 	const int tileSize = 32;
 	int closestCenterj = static_cast<int>(pos.x - mapOffset.x) / tileSize;
 	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
-	// std::cout << "i : " << closestCenteri << "j : " << closestCenterj << std::endl;
+
 	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size())
 	{
-		// std::cout << "pas de collision on est en dehors de la map" << std::endl;
 		return false;
 	}
 	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
@@ -285,134 +282,174 @@ bool Player::fogCollision()
 }
 
 
-void Player::mineBotLeft(int x, int y, std::vector<sf::Vector3i>* imposedPtr)
+void Player::mineBotLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 {
 	Tile old = (*map)[x + y * mapWidth];
+	if(old.getBotLeft() == 2) return;
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), old.getBotRight(), 0, old.getTopLeft());
 	
-	imposedPtr->push_back({ x - 1,y,2 });
-	imposedPtr->push_back({ x - 1,y + 1,2 });
-	imposedPtr->push_back({ x,y + 1,2 });
+	sf::Sprite spr = (*mapSpritesPtr)[y * mapWidth + x];
+	spr.setTextureRect((*map)[y * mapWidth + x].getRect());
+	(*mapSpritesPtr)[y * mapWidth + x] = spr;
+
+	imposedPtr->push_back({ x - 1,y });
+	imposedPtr->push_back({ x,y + 1 });
+	imposedPtr->push_back({ x - 1,y + 1 });
 }
 
-void Player::mineBotLeft(int x, int y, std::vector<sf::Vector3i>* imposedPtr, int otherX, int otherY)
+void Player::mineBotLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY)
 {
 	Tile old = (*map)[x + y * mapWidth];
+	if(old.getBotLeft() == 2) return;
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), old.getBotRight(), 0, old.getTopLeft());
 	
-	if(x - 1 != otherX and y != otherY) imposedPtr->push_back({ x - 1,y,2 });
-	if(x - 1 != otherX and y + 1 != otherY) imposedPtr->push_back({ x - 1,y + 1,2 });
-	if(x != otherX and y + 1 != otherY) imposedPtr->push_back({ x,y + 1,2 });
+	sf::Sprite spr = (*mapSpritesPtr)[y * mapWidth + x];
+	spr.setTextureRect((*map)[y * mapWidth + x].getRect());
+	(*mapSpritesPtr)[y * mapWidth + x] = spr;
+
+	if(x - 1 != otherX and y != otherY) imposedPtr->push_back({ x - 1,y });
+	if(x != otherX and y + 1 != otherY) imposedPtr->push_back({ x,y + 1 });
+	if(x - 1 != otherX and y + 1 != otherY) imposedPtr->push_back({ x - 1,y + 1 });
 }
 
-void Player::mineBotRight(int x, int y, std::vector<sf::Vector3i>* imposedPtr)
+void Player::mineBotRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 {
 	Tile old = (*map)[x + y * mapWidth];
+	if(old.getBotRight() == 2) return;
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), 0, old.getBotLeft(), old.getTopLeft());
 	
-	imposedPtr->push_back({ x + 1,y,1 });
-	imposedPtr->push_back({ x + 1,y + 1,1 });
-	imposedPtr->push_back({ x,y + 1,1 });
+	sf::Sprite spr = (*mapSpritesPtr)[y * mapWidth + x];
+	spr.setTextureRect((*map)[y * mapWidth + x].getRect());
+	(*mapSpritesPtr)[y * mapWidth + x] = spr;
+
+	imposedPtr->push_back({ x + 1,y });
+	imposedPtr->push_back({ x,y + 1 });
+	imposedPtr->push_back({ x + 1,y + 1 });
 }
 
-void Player::mineBotRight(int x, int y, std::vector<sf::Vector3i>* imposedPtr, int otherX, int otherY)
+void Player::mineBotRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY)
 {
 	Tile old = (*map)[x + y * mapWidth];
+	if(old.getBotRight() == 2) return;
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), 0, old.getBotLeft(), old.getTopLeft());
 	
-	if(x + 1 != otherX and y != otherY) imposedPtr->push_back({ x + 1,y,1 });
-	if(x + 1 != otherX and y + 1 != otherY) imposedPtr->push_back({ x + 1,y + 1,1 });
-	if(x != otherX and y + 1 != otherY) imposedPtr->push_back({ x,y + 1,1 });
+	sf::Sprite spr = (*mapSpritesPtr)[y * mapWidth + x];
+	spr.setTextureRect((*map)[y * mapWidth + x].getRect());
+	(*mapSpritesPtr)[y * mapWidth + x] = spr;
+
+	if(x + 1 != otherX and y != otherY) imposedPtr->push_back({ x + 1,y });
+	if(x != otherX and y + 1 != otherY) imposedPtr->push_back({ x,y + 1 });
+	if(x + 1 != otherX and y + 1 != otherY) imposedPtr->push_back({ x + 1,y + 1 });
 }
 
-void Player::mineTopLeft(int x, int y, std::vector<sf::Vector3i>* imposedPtr)
+void Player::mineTopLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 {
-	std::cout << "Mine top left sans other : " << x << " " << y << std::endl;
 	Tile old = (*map)[x + y * mapWidth];
+	if(old.getTopLeft() == 2) return;
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), old.getBotRight(), old.getBotLeft(), 0);
 	
-	imposedPtr->push_back({ x - 1,y,3 });
-	imposedPtr->push_back({ x - 1,y - 1,3 });
-	imposedPtr->push_back({ x,y - 1,3 });
+	sf::Sprite spr = (*mapSpritesPtr)[y * mapWidth + x];
+	spr.setTextureRect((*map)[y * mapWidth + x].getRect());
+	(*mapSpritesPtr)[y * mapWidth + x] = spr;
+
+	imposedPtr->push_back({ x - 1,y });
+	imposedPtr->push_back({ x,y - 1 });
+	imposedPtr->push_back({ x - 1,y - 1 });
 }
 
-void Player::mineTopLeft(int x, int y, std::vector<sf::Vector3i>* imposedPtr, int otherX, int otherY)
+void Player::mineTopLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY)
 {
-	std::cout << "Mine top left avec other : " << x << " " << y << " other : " << otherX << " " << otherY << std::endl;
 	Tile old = (*map)[x + y * mapWidth];
+	if(old.getTopLeft() == 2) return;
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), old.getBotRight(), old.getBotLeft(), 0);
 	
-	if(x - 1 != otherX and y != otherY) imposedPtr->push_back({ x - 1,y,3 });
-	if(x - 1 != otherX and y - 1 != otherY) imposedPtr->push_back({ x - 1,y - 1,3 });
-	if(x != otherX and y - 1 != otherY) imposedPtr->push_back({ x,y - 1,3 });
+	sf::Sprite spr = (*mapSpritesPtr)[y * mapWidth + x];
+	spr.setTextureRect((*map)[y * mapWidth + x].getRect());
+	(*mapSpritesPtr)[y * mapWidth + x] = spr;
+
+	if(x - 1 != otherX and y != otherY) imposedPtr->push_back({ x - 1,y });
+	if(x != otherX and y - 1 != otherY) imposedPtr->push_back({ x,y - 1 });
+	if(x - 1 != otherX and y - 1 != otherY) imposedPtr->push_back({ x - 1,y - 1 });
 }
 
-void Player::mineTopRight(int x, int y, std::vector<sf::Vector3i>* imposedPtr)
+void Player::mineTopRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 {
-	std::cout << "Mine top right sans other : " << x << " " << y << std::endl;
 	Tile old = (*map)[x + y * mapWidth];
+	if(old.getTopRight() == 2) return;
 	(*map)[x + y * mapWidth] = Tile(0, old.getBotRight(), old.getBotLeft(), old.getTopLeft());
 	
-	imposedPtr->push_back({ x - 1,y,0 });
-	imposedPtr->push_back({ x - 1,y - 1,0 });
-	imposedPtr->push_back({ x,y - 1,0 });
+	sf::Sprite spr = (*mapSpritesPtr)[y * mapWidth + x];
+	spr.setTextureRect((*map)[y * mapWidth + x].getRect());
+	(*mapSpritesPtr)[y * mapWidth + x] = spr;
+	
+	imposedPtr->push_back({ x - 1,y });
+	imposedPtr->push_back({ x,y - 1 });
+	imposedPtr->push_back({ x - 1,y - 1 });
 }
 
-void Player::mineTopRight(int x, int y, std::vector<sf::Vector3i>* imposedPtr, int otherX, int otherY)
+void Player::mineTopRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY)
 {
-	std::cout << "Mine top right avec other : " << x << " " << y << " other : " << otherX << " " << otherY << std::endl;
 	Tile old = (*map)[x + y * mapWidth];
+	if(old.getTopRight() == 2) return;
 	(*map)[x + y * mapWidth] = Tile(0, old.getBotRight(), old.getBotLeft(), old.getTopLeft());
 	
-	if(x + 1 != otherX and y != otherY) imposedPtr->push_back({ x + 1,y,0 });
-	if(x + 1 != otherX and y - 1 != otherY) imposedPtr->push_back({ x + 1,y - 1,0 });
-	if(x != otherX and y - 1 != otherY) imposedPtr->push_back({ x,y - 1,0 });
-	std::cout << "survecu omg" << std::endl;
+	sf::Sprite spr = (*mapSpritesPtr)[y * mapWidth + x];
+	spr.setTextureRect((*map)[y * mapWidth + x].getRect());
+	(*mapSpritesPtr)[y * mapWidth + x] = spr;
+	
+	if(x + 1 != otherX and y != otherY) imposedPtr->push_back({ x + 1,y });
+	if(x != otherX and y - 1 != otherY) imposedPtr->push_back({ x,y - 1 });
+	if(x + 1 != otherX and y - 1 != otherY) imposedPtr->push_back({ x + 1,y - 1 });
 }
 
-void Player::updateMapAfterMining(std::vector<sf::Vector3i> imposed)
+void Player::updateMapAfterMining(std::vector<sf::Vector2i> imposed)
 {
-	std::cout << "Go update avec une taille de " << imposed.size() << std::endl;
 	if(imposed.size() <= 0) return;
 	std::unique(imposed.begin(), imposed.end());
-	std::cout << "Go update avec une taille de " << imposed.size() << std::endl;
 
-	for(sf::Vector3i& v : imposed)
+	for(sf::Vector2i& v : imposed)
 	{
-		switch(v.x)
-		{
-			case 0:
-				break;
-			case 1:
-				break;
-			case 2:
-				break;
-			case 3:
-				break;
-			default:
-				break;
-		}
+		(*map)[v.y * mapWidth + v.x] = Tile();
+	}
 
+	for(sf::Vector2i& v : imposed)
+	{
+		int a = (*map)[v.y * mapWidth + v.x + 1].getTopLeft();
+		int b = (*map)[v.y * mapWidth + v.x + 1].getBotLeft();
+		int c = (*map)[(v.y + 1) * mapWidth + v.x].getTopRight();
+		int d = (*map)[(v.y + 1) * mapWidth + v.x].getTopLeft();
+		int e = (*map)[v.y * mapWidth + v.x - 1].getBotRight();
+		int f = (*map)[v.y * mapWidth + v.x - 1].getTopRight();
+		int g = (*map)[(v.y - 1) * mapWidth + v.x].getBotLeft();
+		int h = (*map)[(v.y - 1) * mapWidth + v.x].getBotRight();
 
-		int topRight = (*map)[v.y * mapWidth + v.x + 1].getTopLeft();
-		int botRight = (*map)[v.y * mapWidth + v.x + 1].getBotLeft();
-		int botLeft  = (*map)[v.y * mapWidth + v.x - 1].getBotRight();
-		int topLeft  = (*map)[v.y * mapWidth + v.x - 1].getTopRight();
+		int topRight = h != -1 ? h : a;
+		int botRight = c != -1 ? c : b;
+		int botLeft  = d != -1 ? d : e;
+		int topLeft  = g != -1 ? g : f;
 
-		(*map)[v.y * mapWidth + v.x] = Tile(topRight, botRight, botLeft, topLeft);
-		(*mapSpritesPtr)[v.y * mapWidth + v.x].setTextureRect((*map)[v.y * mapWidth + v.x].getRect());
+		assert(topRight != -1 and botRight != -1 and botLeft != -1 and topLeft != -1);
+
+		(*map)[v.y * mapWidth + v.x].set(topRight, botRight, botLeft, topLeft);
+
+		sf::Sprite spr = (*mapSpritesPtr)[v.y * mapWidth + v.x];
+		spr.setTextureRect((*map)[v.y * mapWidth + v.x].getRect());
+		(*mapSpritesPtr)[v.y * mapWidth + v.x] = spr;
 	}
 }
 
 void Player::mineDown() 
 {
-	std::vector<sf::Vector3i> imposed;
+	std::vector<sf::Vector2i> imposed;
 
 	const int tileSize = 32;
 	int closestCenterj = static_cast<int>(pos.x - mapOffset.x) / tileSize;
-	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
+	int closestCenteri = 1 + static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
 
 	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size()) return;
+
+	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
+	// if(closestTile.getTopRight() == 0 and closestTile.getBotRight() == 0 and closestTile.getTopLeft() == 0 and closestTile.getBotLeft() == 0) return;
 
 	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
 	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
@@ -463,13 +500,16 @@ void Player::mineDown()
 
 void Player::mineRight()
 {
-	std::vector<sf::Vector3i> imposed;
+	std::vector<sf::Vector2i> imposed;
 
 	const int tileSize = 32;
 	int closestCenterj = static_cast<int>(pos.x + 9.0 - mapOffset.x) / tileSize;
 	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
-	// std::cout << "i : " << closestCenteri << "j : " << closestCenterj << std::endl;
+
 	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size()) return;
+
+	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
+	if(closestTile.getTopRight() == 0 and closestTile.getBotRight() == 0 and closestTile.getTopLeft() == 0 and closestTile.getBotLeft() == 0) return;
 
 	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
 	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
@@ -513,13 +553,16 @@ void Player::mineRight()
 
 void Player::mineLeft()
 {
-	std::vector<sf::Vector3i> imposed;
+	std::vector<sf::Vector2i> imposed;
 
 	const int tileSize = 32;
 	int closestCenterj = static_cast<int>(pos.x + 20.0 - mapOffset.x) / tileSize;
 	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
-	// std::cout << "i : " << closestCenteri << "j : " << closestCenterj << std::endl;
+
 	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size()) return;
+	
+	Tile closestTile = (*map)[closestCenterj + closestCenteri * mapWidth];
+	if(closestTile.getTopRight() == 0 and closestTile.getBotRight() == 0 and closestTile.getTopLeft() == 0 and closestTile.getBotLeft() == 0) return;
 
 	float closestCenterX = closestCenterj * tileSize + mapOffset.x;
 	float closestCenterY = closestCenteri * tileSize + mapOffset.y;
@@ -588,18 +631,18 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 			{
 				slidePressed = true;
 				a_slide = pos.x;
-				// std::cout << sens << ' ' << currentDirection << std::endl;
+
 				b_slide = a_slide + sens * slide_dist;
 				anythingPressed = true;
 			}
 			if (keyPressed->scancode == sf::Keyboard::Scancode::C)
 			{
-				if(not mined)
-				{
-					mined = true;
-					std::cout << "C pressed" << std::endl;
-					mineRight();
-				}
+				if(currentDirection == 0) mineRight();
+				else mineLeft();
+			}
+			if (keyPressed->scancode == sf::Keyboard::Scancode::X)
+			{
+				mineDown();
 			}
 		}
 	}
@@ -610,7 +653,7 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 	if (boomPressed)
 	{
 		bombing = true;
-		// std::cout << "boom" << std::endl;
+
 		boom_time = time;
 	}
 	if (slidePressed)
@@ -653,7 +696,6 @@ void Player::process(float dt)
 		pos.x += speedXForStepBuf * dt;
 	if (fogCollision())
 	{
-		std::cout << "ptdr chuis mort" << std::endl;
 		isDead = true;
 	}
 	if (isDead)
@@ -682,7 +724,6 @@ void Player::process(float dt)
 		if (jmping || frames_since_jmp <= 20)
 		{
 			decal = 5;
-			// std::cout << "jmping" << std::endl;
 		}
 		sprite->setTextureRect(sf::IntRect({(currentFrame + decal) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));
 

@@ -147,7 +147,7 @@ void Wfc::init(int w, int h, std::vector<Tile> initial)
     // waves.clear();
 
     // waves.reserve(w * h);
-    std::cout << "waves size en init " << waves.size() << std::endl;
+    // std::cout << "waves size en init " << waves.size() << std::endl;
 
     for(int y = 0; y < h; y++)
     {
@@ -157,7 +157,7 @@ void Wfc::init(int w, int h, std::vector<Tile> initial)
         }
     }
 
-    std::cout << "premiere boucle fniiie" << std::endl;
+    // std::cout << "premiere boucle fniiie" << std::endl;
 
     for(int y = 0; y < h; y++)
     {

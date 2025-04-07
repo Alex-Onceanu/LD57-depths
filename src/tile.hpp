@@ -16,6 +16,7 @@ public:
     sf::IntRect getRect();
 
     bool compatible(int myX, int myY, Tile other, int otherX, int otherY);
+    void set(int topR, int botR, int botL, int topL);
 private:
     int topRight, botRight, botLeft, topLeft;
 };
