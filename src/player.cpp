@@ -555,7 +555,7 @@ void Player::mineLeft()
 	std::vector<sf::Vector2i> imposed;
 
 	const int tileSize = 32;
-	int closestCenterj = static_cast<int>(pos.x + 20.0 - mapOffset.x) / tileSize;
+	int closestCenterj = static_cast<int>(pos.x + 15.0 - mapOffset.x) / tileSize;
 	int closestCenteri = static_cast<int>(pos.y + tileSize / 2.0 - mapOffset.y) / tileSize;
 
 	if (closestCenterj < 0 or closestCenteri < 0 or closestCenterj >= mapWidth or closestCenterj + (closestCenteri + 1) * mapWidth >= map->size()) return;
