@@ -25,13 +25,14 @@ std::ostream& operator<<(std::ostream& out, Wfc w)
     return out;
 }
 
-Wave::Wave(int x, int y, int nbMaterials)
+Wave::Wave(int x, int y)
     : myX(x),
     myY(y)
 {
-    for(int mat = 1; mat < 1 + nbMaterials; mat++)
+    // terre-air et metal-air
+    possibilities.push_back(Tile(0, 0, 0, 0));
+    for(int mat = 1; mat <= 2; mat++)
     {
-        possibilities.push_back(Tile(0, 0, 0, 0));
         possibilities.push_back(Tile(0, 0, 0, mat));
         possibilities.push_back(Tile(0, 0, mat, 0));
         possibilities.push_back(Tile(0, 0, mat, mat));
@@ -48,6 +49,37 @@ Wave::Wave(int x, int y, int nbMaterials)
         possibilities.push_back(Tile(mat, mat, mat, 0));
         possibilities.push_back(Tile(mat, mat, mat, mat));
     }
+    // possibilities.push_back(Tile(2, 2, 2, 3));
+    // possibilities.push_back(Tile(0, 2, 3, 0));
+    // possibilities.push_back(Tile(2, 2, 1, 1));
+    // possibilities.push_back(Tile(0, 3, 2, 0));
+    // possibilities.push_back(Tile(0, 3, 3, 0));
+    // possibilities.push_back(Tile(3, 2, 2, 2));
+    // possibilities.push_back(Tile(3, 2, 2, 3));
+    // possibilities.push_back(Tile(1, 1, 2, 2));
+    // possibilities.push_back(Tile(0, 2, 1, 0));
+    // possibilities.push_back(Tile(0, 1, 2, 0));
+    // possibilities.push_back(Tile(1, 0, 0, 2));
+
+    // possibilities.push_back(Tile(2, 1, 1, 1));
+    // possibilities.push_back(Tile(1, 2, 1, 1));
+    // possibilities.push_back(Tile(1, 1, 2, 1));
+    // possibilities.push_back(Tile(1, 1, 1, 2));
+
+    // for(int i = 0; i < 3; i++)
+    // {
+    //     for(int j = 0; j < 3; j++)
+    //     {
+    //         for(int k = 0; k < 3; k++)
+    //         {
+    //             for(int l = 0; l < 3; l++)
+    //             {
+    //                 // if(i == k and j == l and i != j) continue;
+    //                 possibilities.push_back(Tile(i, j, k, l));
+    //             }
+    //         }
+    //     }
+    // }
 }
 
 void Wave::collapseToOne()
@@ -127,8 +159,7 @@ int Wave::dist(Wave& other)
 
 
 
-Wfc::Wfc(int __nbMateriaux)
-    : nbMateriaux(__nbMateriaux)
+Wfc::Wfc()
 {
     std::srand(std::time(nullptr));
 }
@@ -148,7 +179,7 @@ void Wfc::init(int w, int h, std::vector<Tile> initial)
     {
         for(int x = 0; x < w; x++)
         {
-            waves.push_back(Wave(x, y, nbMateriaux));
+            waves.push_back(Wave(x, y));
         }
     }
 
@@ -296,12 +327,12 @@ std::vector<Tile> Wfc::emptyTileset(int w, int h)
 
     for(int y = 0; y < h; y++)
     {
-        ans.push_back(Tile(2, 2, 2, 2));
-        for(int x = 1; x < w - 1; x++)
+        // ans.push_back(Tile(0, 0, 0, 0));
+        for(int x = 0; x < w; x++)
         {
             ans.push_back(Tile());
         }
-        ans.push_back(Tile(2, 2, 2, 2));
+        // ans.push_back(Tile(0, 0, 0, 0));
     }
     return ans;
 }

@@ -12,7 +12,7 @@
 
 World::World()
 {
-    auto generator = std::make_unique<Wfc>(2);
+    auto generator = std::make_unique<Wfc>();
     
     std::vector<Tile> initial = Wfc::emptyTileset(NB_TILES_X, NB_TILES_Y);
     for(int j = 0; j < NB_TILES_X; j++)
@@ -66,14 +66,15 @@ World::World()
 
 int World::initPath(std::vector<Tile>* initial)
 {
-    int depth = 2;
+    return 0;
+    int depth = 3;
     int k;
     int k_prec = -1;
     int full = std::rand()%2;
-    int abs = std::rand()%(NB_TILES_X-2)+1;
+    int abs = std::rand()%(NB_TILES_X-3)+1;
     while(depth<NB_TILES_Y){
         k = std::rand()%3;
-        if ((k == 0 and abs == NB_TILES_X-2) or (k == 2 and abs == 1) or (k == 2-k_prec)){
+        if ((k == 0 and abs == NB_TILES_X-3) or (k == 2 and abs == 1) or (k == 2-k_prec)){
             k = 1;
         }
         if (k == 1){
@@ -83,8 +84,8 @@ int World::initPath(std::vector<Tile>* initial)
         } else {
             abs--;
         }
-        abs = std::max(abs, 4);
-        abs = std::min(abs, NB_TILES_X - 5);
+        abs = std::max(abs, 2);
+        abs = std::min(abs, NB_TILES_X - 3);
         (*initial)[abs+depth*NB_TILES_X] = Tile(1,1,1,1);
         k_prec = k;
     }

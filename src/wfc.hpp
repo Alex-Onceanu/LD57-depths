@@ -7,7 +7,7 @@
 class Wave
 {
 public:
-    Wave(int x, int y, int nbMaterials);
+    Wave(int x, int y);
     ~Wave();
 
     void collapseToOne();
@@ -28,7 +28,7 @@ private:
 class Wfc
 {
 public:
-    Wfc(int __nbMateriaux);
+    Wfc();
 
     std::vector<Tile> collapse(int w, int h, std::vector<Tile> initial);
     int getWidth();
@@ -46,6 +46,5 @@ private:
 private:
     int width = 0;
     int height = 0;
-    int nbMateriaux;
     std::vector<Wave> waves;
 };

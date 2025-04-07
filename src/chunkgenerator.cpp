@@ -53,14 +53,15 @@ int* ChunkGenerator::getSpriteCyclePtr()
 
 void ChunkGenerator::continuePath(std::vector<Tile>* initial)
 {
-    int depth = 3;
+    return;
+    int depth = 4;
     int k;
     int k_prec = -1;
     int full = std::rand()%2;
 
     while(depth<DEPTH){
         k = std::rand()%3;
-        if ((k == 0 and pathX == NB_TILES_X-2) or (k == 2 and pathX == 1) or (k == 2-k_prec)){
+        if ((k == 0 and pathX == NB_TILES_X-5) or (k == 2 and pathX == 1) or (k == 2-k_prec)){
             k = 1;
         }
         if (k == 1){

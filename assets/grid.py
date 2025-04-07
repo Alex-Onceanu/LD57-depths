@@ -6,10 +6,10 @@ frameW = 32
 frameH = 32
 
 nbCols = 16
-nbLines = 2
+nbLines = 3
 
-prePath = ""
-pathPerLine = ["atm_final", "itm_final"]
+prePath = "finaltrqns/"
+pathPerLine = ["atm_final", "itm_final", "l"]
 postPath = ".png"
 
 base = Image.new(mode="RGBA", size=(frameW * nbCols, frameH * nbLines))
