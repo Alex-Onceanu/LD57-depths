@@ -20,7 +20,7 @@ private:
 	std::vector<Tile>* map;
 	std::vector<sf::Sprite>* mapSpritesPtr;
 	int mapWidth;
-	Wfc* wfcPtr;
+	bool mined;
 
 	sf::Vector2f mapOffset;
   bool isDead = false;
@@ -96,17 +96,17 @@ private:
 	void mineRight();
 	void mineLeft();
 
-	void mineBotLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr);
-	void mineBotRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr);
-	void mineTopLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr);
-	void mineTopRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr);
+	void mineBotLeft(int x, int y, std::vector<sf::Vector3i>* imposedPtr);
+	void mineBotRight(int x, int y, std::vector<sf::Vector3i>* imposedPtr);
+	void mineTopLeft(int x, int y, std::vector<sf::Vector3i>* imposedPtr);
+	void mineTopRight(int x, int y, std::vector<sf::Vector3i>* imposedPtr);
 
-	void mineBotLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr , int otherX, int otherY);
-	void mineBotRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY);
-	void mineTopLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr , int otherX, int otherY);
-	void mineTopRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY);
+	void mineBotLeft(int x, int y, std::vector<sf::Vector3i>* imposedPtr , int otherX, int otherY);
+	void mineBotRight(int x, int y, std::vector<sf::Vector3i>* imposedPtr, int otherX, int otherY);
+	void mineTopLeft(int x, int y, std::vector<sf::Vector3i>* imposedPtr , int otherX, int otherY);
+	void mineTopRight(int x, int y, std::vector<sf::Vector3i>* imposedPtr, int otherX, int otherY);
 
-	void updateMapAfterMining(std::vector<sf::Vector2i> imposed);
+	void updateMapAfterMining(std::vector<sf::Vector3i> imposed);
 
 	//fog
   float* fogHeight;
