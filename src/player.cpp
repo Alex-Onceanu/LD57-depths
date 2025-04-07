@@ -2,6 +2,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <iterator>
+#include <tgmath.h>
 #include <optional>
 #include "player.hpp"
 #include "tile.hpp"
@@ -13,7 +14,7 @@ Player::Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f __mapOffse
 	  mapOffset(__mapOffset),
 	  mapWidth(__mapWidth)
 {
-	texture = sf::Texture("assets/miner_grid.png");
+	texture = sf::Texture("assets/combined_image.png");
 
 	sprite = new sf::Sprite(texture);
 	sprite->setOrigin({16.0, 16.0});
@@ -34,33 +35,45 @@ float Player::slideEasing(float t)
 {
 	return (1 - t) * (1 - t) * (1 - t) * (1 - t);
 }
-float Player::jumpAction(float time)
+float Player::bombEasing(float t)
 {
+	return slideEasing(t)*slideEasing(t);
+}
+void Player::jumpAction(float t_j,float time)
+{
+  if(t_j<jump_buffer){
+  jmping = true;
+  }
+  if(t_j>jump_buffer && !hasJumped)
+  {
 	speed.y = v0;
+  hasJumped = true;
 	// std::cout << "speedy is" << speed.y << std::endl;
-	jmping = true;
+  buffer = 0;
 	gravity = true;
-	frames_since_jmp = 0;
-	return time;
+  }
 }
-float Player::bombEasing(float time)
-{
-	return time;
-}
+
 void Player::bombAction(float t_b, float time)
 {
-	if (t_b < boom_time && bombing)
+	if (t_b < float_time && bombing)
 	{
-		float t = (time - boom_start) / boom_time;
-		t = bombEasing(t);
-		float p = a_slide * t + (1 - t) * b_slide;
+		float t = (time - boom_start) / float_time;
+		t = slideEasing(t);
+		float p = a_bomb * t + (1 - t) * b_bomb;
 		pos.y = p;
-		/*std::cout << 'a' << a_slide << ' '<< b_slide << t << std::endl;*/
+    gravity = false;
 	}
-	// if (sliding && t_b >= slide_time)
-	// {
-	// 	sliding = false;
-	// }
+  if(bombing && t_b >= float_time)
+  {
+    speed.y = -3*v0; 
+    gravity = true;
+  }
+	if (bombing && t_b >= boom_time)
+	 {
+	 	bombing = false;
+    gravity = true;
+	 }
 }
 
 sf::Vector2f* Player::getPosPtr()
@@ -79,7 +92,12 @@ void Player::slideAction(float t_s, float time)
 		float t = (time - slide_start) / slide_time;
 		t = slideEasing(t);
 		float p = a_slide * t + (1 - t) * b_slide;
-		pos.x = p;
+    if(!collisionLeft() && !collisionRight()){
+      pos.x = p;
+    }
+    else{
+		  pos.x = p;
+    }
 		// std::cout << 'a' << a_slide << ' '<< b_slide << t << std::endl;
 	}
 	if (sliding && t_s >= slide_time)
@@ -159,7 +177,7 @@ bool Player::collision()
 void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 {
 
-	int jmpPressed = false;
+	jmpPressed = false;
 	int boomPressed = false;
 	int slidePressed = false;
 	anythingPressed = false;
@@ -179,7 +197,7 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 				boomPressed = true;
 				anythingPressed = true;
 				a_bomb = pos.y;
-				b_bomb = 1.;
+				b_bomb = a_bomb - 15;
 			}
 			if (keyPressed->scancode == sf::Keyboard::Scancode::RShift)
 			{
@@ -193,26 +211,38 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 	}
 	// JUMP
 	if (jmpPressed && canJump)
-		float time_jmp = jumpAction(time);
+  {
+    jmping = true;
+    hasJumped = false;
+    jump_time = time;
+  } 
 	// BOOM
 	if (boomPressed)
 	{
 		bombing = true;
 		// std::cout << "boom" << std::endl;
-		boom_time = time;
+		boom_start = time;
 	}
 	if (slidePressed)
 	{
 		sliding = true;
 		slide_start = time;
 	}
-	float t_b = myClock.getElapsedTime().asSeconds() - boom_start;
 	// Bomb action
+  float t_b = myClock.getElapsedTime().asSeconds() - boom_start;
 	bombAction(t_b, time);
+  //Jump action
+  float t_j = myClock.getElapsedTime().asSeconds() - jump_time;
+  jumpAction(t_j,time);
 	// Slide action
 	float t_s = myClock.getElapsedTime().asSeconds() - slide_start;
 	slideAction(t_s, time);
 	// Left and Right
+  if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R))
+  {
+    pos.x = 553.0;
+    pos.y = 100.0;
+  }
 	for (int i = 0; i < 2; i++)
 	{
 
@@ -223,13 +253,50 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 			anythingPressed = true;
 		}
 	}
-	frames_since_jmp++;
 	if (!anythingPressed)
 	{
 		speed.x = 0;
 	}
 }
+void Player::loadTexture(){
+  int decal = 0;
+  int bombFrames = 15;
+  if(!anythingPressed){
+    /*float y = (sens == 1) ? (0.) :(32.);*/
+    sprite->setTextureRect(sf::IntRect({0, currentDirection * spriteW}, {spriteW, spriteW})); 
+  }
+  bool spritejmp = jmping and buffer<10;
+  bool spriteslide = sliding;
+  bool spritebomb = bombSprite || bombBuffer < bombFrames;
+	if (spritejmp || spriteslide || spritebomb)
+	{
+    spritejmp = jmping and buffer<10;
+    spriteslide = sliding;
+    spritebomb = bombSprite || bombBuffer <bombFrames;
+    if(spritejmp){
+    buffer++;
+		decal = buffer/2;
+    std::cout << "decal =" << decal << std::endl;
+  	sprite->setTextureRect(sf::IntRect({(5 + decal) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));  
+		std::cout << "j" << std::endl;
+    }
+    if(spriteslide)
+    {
+      sprite->setTextureRect(sf::IntRect({(15) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));  
+    }
+    if(bombSprite || bombBuffer < bombFrames)
+    {
+      std::cout <<"bopmb" <<std::endl;
+      bombSprite = false;
+      bombBuffer++;
+      sprite->setTextureRect(sf::IntRect({(15) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));
+    }
+	}
+  else{
+	sprite->setTextureRect(sf::IntRect({(currentFrame + decal) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));
+  }
 
+}
 void Player::process(float dt)
 {
 	sf::Vector2f oldPos = sf::Vector2f({pos.x, pos.y});
@@ -250,26 +317,26 @@ void Player::process(float dt)
 	}
 	timeSinceLastAnim += dt;
 	pos += speed * dt;
-	int decal = 0;
-	if (jmping || frames_since_jmp <= 20)
+		if (collisionDown())
 	{
-		decal = 5;
-		// std::cout << "jmping" << std::endl;
-	}
-	sprite->setTextureRect(sf::IntRect({(currentFrame + decal) * spriteW, currentDirection * spriteW}, {spriteW, spriteW}));
-
-	if (collisionDown())
-	{
+    if(bombing)
+    {
+      bombSprite = true;
+      bombBuffer = 0;
+    }
 		pos.y = oldPos.y;
 		speed.y = 0.0;
 		canJump = true;
 		jmping = false;
+    buffer = 0;
+    bombing = false;
 	}
 	else
 	{
 		canJump = false;
-	}
 
+	}
+loadTexture();
 	sprite->setPosition(pos);
 }
 

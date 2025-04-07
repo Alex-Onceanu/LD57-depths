@@ -22,27 +22,33 @@ private:
 	// actions
 	// Jump
 	bool anythingPressed = false;
+  int buffer=0;
 	bool jmping = false;
+  bool hasJumped = false;
+  bool jmpPressed = false;
 	bool canJump = false;
-	int frames_since_jmp = 100;
+	float jump_time= 0.;
+  float jump_buffer = 0.1;
 	    //Bomb
     bool bombing = false;
+    bool bombSprite = false;
+    int bombBuffer = 0;
     float boom_start = 0.5;
-    float boom_time = 1.;
-    float float_time = .8;
+    float boom_time = 10.;
+    float float_time = .3;
     float a_bomb;
     float b_bomb;
     //slide 
     bool sliding = false;
     float slide_start = 1.;
-    float slide_time = .6;
+    float slide_time = .4;
     float slide_dist = 130.;
     float a_slide;
     float b_slide;
 
 	// Sprite
 	int spriteW = 32;
-	const int NB_FRAMES = 6;
+	const int NB_FRAMES = 3;
 	int currentFrame = 0;
 	int currentDirection = 0;
 	int sens = (currentDirection == 1) ? -1 : 1;
@@ -58,7 +64,7 @@ private:
 	sf::Vector2f pos{553.0, 100.0};
 	const float SPEED_VAL = 224.0;
 	sf::Vector2f speed = {0.0, 0.0};
-	sf::Vector2f grav = {0.0, static_cast<float>(5.0 * (16.0 / 1.7) * 10)};
+	sf::Vector2f grav = {0.0, static_cast<float>(4 * (16.0 / 1.7) * 10)};
 	float stepPerDirection[2] = {static_cast<float>(1.0), static_cast<float>(-1.0)};
 	sf::Keyboard::Key keyPerDirection[2] = {
 		sf::Keyboard::Key::Right,
@@ -72,12 +78,13 @@ private:
 	float time_slide;
 	// fonctions
 	bool blocked(sf::Vector2f pos);
-	float jumpAction(float time);
+	void jumpAction(float t_j,float time);
 	void bombAction(float tb, float time);
 	void slideAction(float ts, float time);
 	float slideEasing(float t);
-    float bombEasing(float t);
-	
+  float bombEasing(float t);
+  void loadTexture();
+
 	bool collision();
 	bool collisionDown();
 	bool collisionRight();
