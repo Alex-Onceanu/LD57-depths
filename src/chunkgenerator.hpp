@@ -9,7 +9,7 @@
 #include "wfc.hpp"
 
 
-constexpr int NB_TILES_X = 16;
+constexpr int NB_TILES_X = 20;
 constexpr int NB_TILES_Y = 24;
 constexpr int DEPTH = 4;
 

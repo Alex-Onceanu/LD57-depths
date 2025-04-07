@@ -19,6 +19,31 @@ World::World()
     {
         initial[j] = Tile(0, 0, 0, 0);
     }
+    /*for (int i = 1; i < NB_TILES_Y; i++)
+    {
+        initial[i*NB_TILES_X] = Tile(0,0,1,1); //TODO : mettre des 3 ou plus pour une texture type mur mais incassable
+        initial[(i+1)*NB_TILES_X-1] = Tile(1,1,0,0); //TODO : mettre des 3 ou plus pour une texture type mur mais incassable
+    }*/
+    int depth = 2;
+    int k;
+    int k_prec = -1;
+    int full = std::rand()%2;
+    int abs = std::rand()%(NB_TILES_X-2)+1;
+    while(depth<NB_TILES_Y){
+        k = std::rand()%3;
+        if ((k == 0 and abs == NB_TILES_X-2) or (k == 2 and abs == 1) or (k == 2-k_prec)){
+            k = 1;
+        }
+        if (k == 1){
+            depth++;
+        } else if(k == 0){
+            abs++;
+        } else {
+            abs--;
+        }
+        initial[abs+depth*NB_TILES_X] = Tile(1,1,1,1);
+        k_prec = k;
+    }
     // for(int i = 0; i < NB_TILES_Y; i++)
     // {
     //     for(int j = 0; j < NB_TILES_X; j++)
