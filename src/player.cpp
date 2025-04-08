@@ -104,12 +104,12 @@ void Player::slideAction(float t_s, float time)
 		float p = a_slide * t + (1 - t) * b_slide;
 		if (!collisionLeft() && !collisionRight())
 		{
+
 			pos.x = p;
 		}
-		else
-		{
-			pos.x = p;
-		}
+		
+    else{    std::cout << "colliding left" <<std::endl;
+}
 
 	}
 	if (sliding && t_s >= slide_time)
@@ -678,9 +678,12 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 				whiff->play();
 				boomPressed = true;
 				anythingPressed = true;
-				a_bomb = pos.y;
-				b_bomb = a_bomb - 15;
-				boom_start = time;
+        if(not bombing)
+        {
+          a_bomb = pos.y;
+          b_bomb = a_bomb - 15;
+          boom_time = time;
+        }
 			}
 			if (keyPressed->scancode == sf::Keyboard::Scancode::RShift)
 			{
@@ -717,6 +720,7 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 	if (boomPressed)
 	{
 		bombing = true;
+
 	}
 	if (slidePressed)
 	{
