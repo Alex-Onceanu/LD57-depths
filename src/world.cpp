@@ -38,7 +38,7 @@ World::World()
     int i = 0;
     for(auto& t : map)
     {
-        mapTexs[i] = sf::Texture("assets/tilemap.png");
+        mapTexs[i] = sf::Texture("./assets/tilemap.png");
         mapTexs[i].setSmooth(false);
         sf::Sprite sprite(mapTexs[i]);
         sprite.setTextureRect(t.getRect());

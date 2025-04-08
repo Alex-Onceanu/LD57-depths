@@ -17,18 +17,18 @@ Player::Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f *__mapOffs
 	  mapWidth(__mapWidth),
 	  mapSpritesPtr(__mapSpritesPtr)
 {
-	texture = sf::Texture("assets/combined_image.png");
+	texture = sf::Texture("./assets/combined_image.png");
 	fogHeight = _fogHeight;
 	sprite = new sf::Sprite(texture);
 	sprite->setOrigin({16.0, 16.0});
 	sprite->setTextureRect(sf::IntRect({0, 0}, {32, 32}));
 	g = 2 * VERTICAL / (HANG_TIME * HANG_TIME);
 	v0 = -2 * VERTICAL / HANG_TIME;
-	metalsb = sf::SoundBuffer("assets/metal-ting.mp3");
+	metalsb = sf::SoundBuffer("./assets/metal-ting.mp3");
 	metal = new sf::Sound(metalsb);
-	whiffsb = sf::SoundBuffer("assets/whiff.mp3");
+	whiffsb = sf::SoundBuffer("./assets/whiff.mp3");
 	whiff = new sf::Sound(whiffsb);
-	dirtsb = sf::SoundBuffer("assets/dirt-dig.mp3");
+	dirtsb = sf::SoundBuffer("./assets/dirt-dig.mp3");
 	dirt = new sf::Sound(dirtsb);
 }
 
