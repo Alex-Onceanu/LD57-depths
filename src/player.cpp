@@ -263,22 +263,25 @@ bool Player::collisionDown()
 	float closestCenterX = closestCenterj * tileSize + mapOffset->x;
 	float closestCenterY = closestCenteri * tileSize + mapOffset->y;
 
-	if (closestTile.getBotLeft() and closestTile.getBotRight())
+	if (closestTile.getBotLeft() and closestTile.getBotRight() and closestTile.getBotLeft() != 3 and closestTile.getBotRight() != 3)
 		return true;
 
 	if (pos.x > closestCenterX)
 	{
 		if (std::abs(closestCenterX - pos.x) < std::abs((closestCenterX + tileSize / 2.0) - pos.x))
 		{
+			if(closestTile.getBotLeft() == 3 or closestTile.getBotRight() == 3) isDead = true;
 			return closestTile.getBotLeft() or closestTile.getBotRight();
 		}
 		else
 		{
 			if ((closestCenterj + 1) >= mapWidth)
 			{
+				if(closestTile.getBotRight() == 3) isDead = true;
 				return closestTile.getBotRight();
 			}
 			Tile rightTile = (*map)[(closestCenterj + 1) + closestCenteri * mapWidth];
+			if(closestTile.getBotRight() == 3 or rightTile.getBotLeft() == 3) isDead = true;
 			return closestTile.getBotRight() or rightTile.getBotLeft();
 		}
 	}
@@ -286,15 +289,18 @@ bool Player::collisionDown()
 	{
 		if (std::abs(closestCenterX - pos.x) < std::abs((closestCenterX - tileSize / 2.0) - pos.x))
 		{
+			if(closestTile.getBotLeft() == 3 or closestTile.getBotRight() == 3) isDead = true;			
 			return closestTile.getBotLeft() or closestTile.getBotRight();
 		}
 		else
 		{
 			if ((closestCenterj - 1) < 0)
 			{
+				if(closestTile.getBotLeft() == 3) isDead = true;
 				return closestTile.getBotLeft();
 			}
 			Tile rightTile = (*map)[(closestCenterj - 1) + closestCenteri * mapWidth];
+			if(closestTile.getBotLeft() == 3 or rightTile.getBotRight() == 3) isDead = true;		
 			return closestTile.getBotLeft() or rightTile.getBotRight();
 		}
 	}
@@ -792,7 +798,8 @@ void Player::process(float dt)
 	}
 	if (isDead)
 	{
-		sprite->setPosition(spawnPoint);
+		throw std::runtime_error("Ptdr chui mort");
+		// sprite->setPosition(spawnPoint);
 	}
 	else
 	{

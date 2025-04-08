@@ -19,6 +19,7 @@ World::World()
     {
         initial[j] = Tile(0, 0, 0, 0);
     }
+    initial[NB_TILES_X + 13] = Tile(0, 1, 0, 0);
     // initial[NB_TILES_X] = Tile(0, 2, 2, 0);
     // initial[2 * NB_TILES_X - 1] = Tile(0, 2, 2, 0);
     int abs = initPath(&initial);
