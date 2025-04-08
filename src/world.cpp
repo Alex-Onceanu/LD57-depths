@@ -19,8 +19,8 @@ World::World()
     {
         initial[j] = Tile(0, 0, 0, 0);
     }
-    initial[NB_TILES_X] = Tile(0, 2, 2, 0);
-    initial[2 * NB_TILES_X - 1] = Tile(0, 2, 2, 0);
+    // initial[NB_TILES_X] = Tile(0, 2, 2, 0);
+    // initial[2 * NB_TILES_X - 1] = Tile(0, 2, 2, 0);
     int abs = initPath(&initial);
     // for(int i = 0; i < NB_TILES_Y; i++)
     // {
@@ -66,6 +66,7 @@ World::World()
 
 int World::initPath(std::vector<Tile>* initial)
 {
+    return 0;
     int depth = 2;
     int k;
     int k_prec = -1;
@@ -73,7 +74,7 @@ int World::initPath(std::vector<Tile>* initial)
     int abs = std::rand()%(NB_TILES_X-2)+1;
     while(depth<NB_TILES_Y){
         k = std::rand()%3;
-        if ((k == 0 and abs == NB_TILES_X-2) or (k == 2 and abs == 1) or (k == 2-k_prec)){
+        if ((k == 0 and abs == NB_TILES_X-5) or (k == 2 and abs == 4) or (k == 2-k_prec)){
             k = 1;
         }
         if (k == 1){

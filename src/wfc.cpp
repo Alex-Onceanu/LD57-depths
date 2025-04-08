@@ -48,6 +48,13 @@ Wave::Wave(int x, int y, int nbMaterials)
         possibilities.push_back(Tile(mat, mat, mat, 0));
         possibilities.push_back(Tile(mat, mat, mat, mat));
     }
+    possibilities.push_back(Tile(0, 0, 0, 0));
+    possibilities.push_back(Tile(2, 2, 2, 3));
+    possibilities.push_back(Tile(0, 2, 3, 0));
+    possibilities.push_back(Tile(0, 3, 2, 0));
+    possibilities.push_back(Tile(0, 3, 3, 0));
+    possibilities.push_back(Tile(3, 2, 2, 2));
+    possibilities.push_back(Tile(3, 2, 2, 3));
 }
 
 void Wave::collapseToOne()
@@ -296,12 +303,12 @@ std::vector<Tile> Wfc::emptyTileset(int w, int h)
 
     for(int y = 0; y < h; y++)
     {
-        ans.push_back(Tile(2, 2, 2, 2));
-        for(int x = 1; x < w - 1; x++)
+        // ans.push_back(Tile(2, 2, 2, 2));
+        for(int x = 0; x < w; x++)
         {
             ans.push_back(Tile());
         }
-        ans.push_back(Tile(2, 2, 2, 2));
+        // ans.push_back(Tile(2, 2, 2, 2));
     }
     return ans;
 }

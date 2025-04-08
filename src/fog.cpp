@@ -17,9 +17,9 @@ float* Fog::getHeight(){
 
 
 void Fog::process(float dt){
-    pos.y += 1;
+    pos.y += 120 * dt;
     sprite->setPosition(pos);
-    height += 1;
+    height += 120 * dt;
 }
 
 void Fog::draw(sf::RenderWindow& window){
