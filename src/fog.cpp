@@ -3,7 +3,7 @@
 #include "world.hpp"
 
 Fog::Fog(){
-    texture = sf::Texture("./assets/fog.png");//exemple
+    texture = sf::Texture("assets/fog.png");//exemple
     sprite = new sf::Sprite(texture, sf::IntRect({0,0}, {RES_X, RES_Y}));
     sprite->setPosition(pos);
     collision = sf::RectangleShape({RES_X, RES_Y});

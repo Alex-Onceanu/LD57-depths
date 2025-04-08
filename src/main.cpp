@@ -18,7 +18,7 @@ int main()
         sf::Clock clock;
         std::vector<std::optional<sf::Event>> events;
         float timeSinceStart = 0.;
-        sf::Music music("./assets/GOLEM.mp3");
+        sf::Music music("assets/GOLEM.mp3");
         music.setLooping(true);
         music.setVolume(50);
         music.play();
