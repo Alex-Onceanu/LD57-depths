@@ -1,6 +1,7 @@
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <SFML/Audio.hpp>
 #include <iterator>
 #include <tgmath.h>
 #include <optional>
@@ -23,6 +24,12 @@ Player::Player(std::vector<Tile> *__map, int __mapWidth, sf::Vector2f* __mapOffs
 	sprite->setTextureRect(sf::IntRect({0, 0}, {32, 32}));
 	g = 2 * VERTICAL / (HANG_TIME * HANG_TIME);
 	v0 = -2 * VERTICAL / HANG_TIME;
+	metalsb = sf::SoundBuffer("assets/metal-ting.mp3");
+	metal = new sf::Sound(metalsb);
+	whiffsb = sf::SoundBuffer("assets/whiff.mp3");
+	whiff = new sf::Sound(whiffsb);
+	dirtsb = sf::SoundBuffer("assets/dirt-dig.mp3");
+	dirt = new sf::Sound(dirtsb);
 }
 
 Player::~Player()
@@ -320,7 +327,7 @@ void Player::setSpriteCyclePtr(int* which)
 void Player::mineBotLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 {
 	Tile old = (*map)[x + y * mapWidth];
-	if(old.getBotLeft() != 1) return;
+	if(old.getBotLeft() != 1) { if (not bombing) metal->play(); return; }
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), old.getBotRight(), 0, old.getTopLeft());
 	
 	int indexSprite = (*spriteCyclePtr + y * mapWidth + x) % mapSpritesPtr->size();
@@ -336,7 +343,7 @@ void Player::mineBotLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 void Player::mineBotLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY)
 {
 	Tile old = (*map)[x + y * mapWidth];
-	if(old.getBotLeft() != 1) return;
+	if(old.getBotLeft() != 1) { if (not bombing) metal->play(); return; }
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), old.getBotRight(), 0, old.getTopLeft());
 	
 	int indexSprite = (*spriteCyclePtr + y * mapWidth + x) % mapSpritesPtr->size();
@@ -352,7 +359,7 @@ void Player::mineBotLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr, in
 void Player::mineBotRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 {
 	Tile old = (*map)[x + y * mapWidth];
-	if(old.getBotRight() != 1) return;
+	if(old.getBotRight() != 1) { if (not bombing) metal->play(); return; }
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), 0, old.getBotLeft(), old.getTopLeft());
 	
 	int indexSprite = (*spriteCyclePtr + y * mapWidth + x) % mapSpritesPtr->size();
@@ -368,7 +375,7 @@ void Player::mineBotRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 void Player::mineBotRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY)
 {
 	Tile old = (*map)[x + y * mapWidth];
-	if(old.getBotRight() != 1) return;
+	if(old.getBotRight() != 1) { if (not bombing) metal->play(); return; }
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), 0, old.getBotLeft(), old.getTopLeft());
 	
 	int indexSprite = (*spriteCyclePtr + y * mapWidth + x) % mapSpritesPtr->size();
@@ -384,7 +391,7 @@ void Player::mineBotRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr, i
 void Player::mineTopLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 {
 	Tile old = (*map)[x + y * mapWidth];
-	if(old.getTopLeft() != 1) return;
+	if(old.getTopLeft() != 1) { if (not bombing) metal->play(); return; }
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), old.getBotRight(), old.getBotLeft(), 0);
 	
 	int indexSprite = (*spriteCyclePtr + y * mapWidth + x) % mapSpritesPtr->size();
@@ -400,7 +407,7 @@ void Player::mineTopLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 void Player::mineTopLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY)
 {
 	Tile old = (*map)[x + y * mapWidth];
-	if(old.getTopLeft() != 1) return;
+	if(old.getTopLeft() != 1) { if (not bombing) metal->play(); return; }
 	(*map)[x + y * mapWidth] = Tile(old.getTopRight(), old.getBotRight(), old.getBotLeft(), 0);
 	
 	int indexSprite = (*spriteCyclePtr + y * mapWidth + x) % mapSpritesPtr->size();
@@ -416,7 +423,7 @@ void Player::mineTopLeft(int x, int y, std::vector<sf::Vector2i>* imposedPtr, in
 void Player::mineTopRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 {
 	Tile old = (*map)[x + y * mapWidth];
-	if(old.getTopRight() != 1) return;
+	if(old.getTopRight() != 1) { if (not bombing) metal->play(); return; }
 	(*map)[x + y * mapWidth] = Tile(0, old.getBotRight(), old.getBotLeft(), old.getTopLeft());
 	
 	int indexSprite = (*spriteCyclePtr + y * mapWidth + x) % mapSpritesPtr->size();
@@ -432,7 +439,7 @@ void Player::mineTopRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr)
 void Player::mineTopRight(int x, int y, std::vector<sf::Vector2i>* imposedPtr, int otherX, int otherY)
 {
 	Tile old = (*map)[x + y * mapWidth];
-	if(old.getTopRight() != 1) return;
+	if(old.getTopRight() != 1) { if (not bombing) metal->play(); return; }
 	(*map)[x + y * mapWidth] = Tile(0, old.getBotRight(), old.getBotLeft(), old.getTopLeft());
 	
 	int indexSprite = (*spriteCyclePtr + y * mapWidth + x) % mapSpritesPtr->size();
@@ -481,6 +488,7 @@ void Player::updateMapAfterMining(std::vector<sf::Vector2i> imposed)
 		spr.setTextureRect(t.getRect());
 		(*mapSpritesPtr)[spriteIndex] = spr;
 	}
+	dirt->play();
 }
 
 void Player::mineDown() 
@@ -666,6 +674,8 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 			}
 			if (keyPressed->scancode == sf::Keyboard::Scancode::LShift)
 			{
+				assert(whiff != nullptr);
+				whiff->play();
 				boomPressed = true;
 				anythingPressed = true;
 				a_bomb = pos.y;
@@ -680,8 +690,10 @@ void Player::input(std::vector<std::optional<sf::Event>> events, float time)
 				b_slide = a_slide + sens * slide_dist;
 				anythingPressed = true;
 			}
-			if (keyPressed->scancode == sf::Keyboard::Scancode::C)
+			if (keyPressed->scancode == sf::Keyboard::Scancode::Z)
 			{
+				assert(whiff != nullptr);
+				whiff->play();
 				if(currentDirection == 0) mineRight();
 				else mineLeft();
 			}

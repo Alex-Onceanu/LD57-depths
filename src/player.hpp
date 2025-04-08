@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Audio.hpp>
 
 
 class Player : public Entity
@@ -121,6 +122,12 @@ private:
 	void updateMapAfterMining(std::vector<sf::Vector2i> imposed);
 
 	//fog
-  float* fogHeight;
-  bool fogCollision();
+    float* fogHeight;
+    bool fogCollision();
+	sf::SoundBuffer metalsb;
+	sf::Sound* metal;
+	sf::SoundBuffer whiffsb;
+	sf::Sound* whiff;
+	sf::SoundBuffer dirtsb;
+	sf::Sound* dirt;
 };

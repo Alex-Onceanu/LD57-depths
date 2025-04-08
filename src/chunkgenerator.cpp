@@ -53,7 +53,6 @@ int* ChunkGenerator::getSpriteCyclePtr()
 
 void ChunkGenerator::continuePath(std::vector<Tile>* initial)
 {
-    (*initial)[(std::rand() % 5 + 7)+4*NB_TILES_X].set(1,1,1,1);
     return;
     int depth = 4;
     int k;

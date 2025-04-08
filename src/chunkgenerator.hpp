@@ -10,8 +10,8 @@
 
 
 constexpr int NB_TILES_X = 24;
-constexpr int NB_TILES_Y = 24;
-constexpr int DEPTH = 6;
+constexpr int NB_TILES_Y = 20;
+constexpr int DEPTH = 4;
 
 class ChunkGenerator : public Entity {
 public : 
