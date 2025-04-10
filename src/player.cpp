@@ -56,7 +56,7 @@ void Player::jumpAction(float t_j, float time)
 	}
 	if (t_j > jump_buffer && !hasJumped)
 	{
-		speed.y = v0;
+		speed.y = 2*v0;
 		hasJumped = true;
 
 		buffer = 0;

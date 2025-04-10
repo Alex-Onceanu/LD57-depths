@@ -1,0 +1,5 @@
+bouger : flèches
+miner : w
+miner vers le bas : shift
+fuyez le brouillard qui descend 
+hf le respawn est automatique
